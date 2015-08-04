@@ -113,7 +113,7 @@
     if (edgeNum) {
         RSScrollViewEdge edge;
 
-        [edgeNum getValue:&edgeNum];
+        [edgeNum getValue:&edge];
 
         [delegate scrollView:scrollView willScrollToEdge:edge];
     }
