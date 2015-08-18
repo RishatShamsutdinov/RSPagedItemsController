@@ -65,8 +65,10 @@
         _scrollView = scrollView;
         _scrollViewEdge = scrollViewEdge;
         _enableLoading = YES;
-        _loader = loader;
         _firstInitialLoad = YES;
+
+        _loader = loader;
+        _loader.delegate = self;
 
         _operationQueue = [NSOperationQueue new];
         _operationQueue.maxConcurrentOperationCount = 1;

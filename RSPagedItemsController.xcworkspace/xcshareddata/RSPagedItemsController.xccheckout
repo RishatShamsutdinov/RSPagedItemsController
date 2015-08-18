@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>58EBE90F-2734-49AB-9494-DAAF7F2EC1A6</string>
+	<key>IDESourceControlProjectName</key>
+	<string>RSPagedItemsController</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>FB8C773AED6B159364635CCE29E43B4BE9E32063</key>
+		<string>github.com:RishatShamsutdinov/RSPagedItemsController.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>RSPagedItemsController.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>FB8C773AED6B159364635CCE29E43B4BE9E32063</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:RishatShamsutdinov/RSPagedItemsController.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>FB8C773AED6B159364635CCE29E43B4BE9E32063</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>FB8C773AED6B159364635CCE29E43B4BE9E32063</string>
+			<key>IDESourceControlWCCName</key>
+			<string>RSPagedItemsController</string>
+		</dict>
+	</array>
+</dict>
+</plist>
