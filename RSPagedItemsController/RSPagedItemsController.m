@@ -220,6 +220,10 @@
                                                      forScrollView:scrollView scrollViewEdge:edge];
 }
 
+- (void)loadInitialContentWithCompletion:(void (^)(BOOL))completion {
+    [_itemsLoadManager loadInitialContentWithCompletion:completion];
+}
+
 #pragma mark - RSPagedItemsLoadManagerDelegate
 
 - (void)pagedItemsLoadManager:(RSPagedItemsLoadManager *)manager didLoadItems:(NSArray *)items initial:(BOOL)initial {

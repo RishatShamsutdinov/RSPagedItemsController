@@ -51,6 +51,8 @@ typedef void(^RSPagedItemsControllerLoadingBlock)(RSPagedItemsControllerHandler 
 - (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
                     usingLoader:(id<RSPagedItemsLoader>)loader;
 
+- (void)loadInitialContentWithCompletion:(void (^)(BOOL success))completion;
+
 - (id)objectAtIndexedSubscript:(NSUInteger)idx;
 
 - (void)addObject:(id)obj;
