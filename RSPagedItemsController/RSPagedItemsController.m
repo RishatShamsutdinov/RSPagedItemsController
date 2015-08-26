@@ -227,32 +227,37 @@
 #pragma mark - RSPagedItemsLoadManagerDelegate
 
 - (void)pagedItemsLoadManager:(RSPagedItemsLoadManager *)manager didLoadItems:(NSArray *)items initial:(BOOL)initial {
-    RSPagedItemsChangeType changeType;
+    RSPagedItemsChangeType changeType = RSPagedItemsChangeReplace;
     NSIndexSet *indexes;
+    NSEnumerator *enumerator;
 
     if (initial) {
         _itemsUUID = [NSUUID UUID];
 
         changeType = RSPagedItemsChangeReplace;
 
-        [_items setArray:items];
+        [_items removeAllObjects];
+    }
 
-        indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _items.count)];
-    } else if (_itemsLoadManager.scrollViewEdge == RSScrollViewEdgeTop) {
-        changeType = RSPagedItemsChangeInsert;
+    if (_itemsLoadManager.scrollViewEdge == RSScrollViewEdgeTop) {
+        if (!initial) {
+            changeType = RSPagedItemsChangeInsert;
+        }
 
         indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, items.count)];
 
-        [items enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [_items insertObject:obj atIndex:0];
-        }];
+        enumerator = [items reverseObjectEnumerator];
     } else {
-        changeType = RSPagedItemsChangeAppend;
+        if (!initial) {
+            changeType = RSPagedItemsChangeAppend;
+        }
 
         indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(_items.count, items.count)];
 
-        [_items addObjectsFromArray:items];
+        enumerator = [items objectEnumerator];
     }
+
+    [_items addObjectsFromArray:[enumerator allObjects]];
 
     [self _didChageItemsAtIndexes:indexes forChangeType:changeType];
 }
