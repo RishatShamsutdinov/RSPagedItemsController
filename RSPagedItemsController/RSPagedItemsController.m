@@ -66,6 +66,10 @@
 }
 
 - (void)_didChageItemsAtIndexes:(NSIndexSet *)indexes forChangeType:(RSPagedItemsChangeType)changeType {
+    if (!indexes.count) {
+        return;
+    }
+
     id delegate = self.delegate;
 
     if ([delegate respondsToSelector:@selector(pagedItemsController:didChangeItemsAtIndexes:forChangeType:)]) {
