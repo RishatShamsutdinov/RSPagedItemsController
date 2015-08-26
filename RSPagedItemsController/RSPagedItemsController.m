@@ -230,6 +230,7 @@
     RSPagedItemsChangeType changeType = RSPagedItemsChangeReplace;
     NSIndexSet *indexes;
     NSEnumerator *enumerator;
+    NSUInteger indexForInsert;
 
     if (initial) {
         _itemsUUID = [NSUUID UUID];
@@ -245,19 +246,19 @@
         }
 
         indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, items.count)];
-
         enumerator = [items reverseObjectEnumerator];
+        indexForInsert = 0;
     } else {
         if (!initial) {
             changeType = RSPagedItemsChangeAppend;
         }
 
         indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(_items.count, items.count)];
-
         enumerator = [items objectEnumerator];
+        indexForInsert = _items.count;
     }
 
-    [_items addObjectsFromArray:[enumerator allObjects]];
+    [_items rs_insertObjects:[enumerator allObjects] atIndex:indexForInsert];
 
     [self _didChageItemsAtIndexes:indexes forChangeType:changeType];
 }
