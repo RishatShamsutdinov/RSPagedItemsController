@@ -65,7 +65,31 @@
     return _items[idx];
 }
 
-- (void)_didChageItemsAtIndexes:(NSIndexSet *)indexes forChangeType:(RSPagedItemsChangeType)changeType {
+- (id)objectsAtIndexes:(NSIndexSet *)indexes {
+    return [_items objectsAtIndexes:indexes];
+}
+
+- (void)enumerateObjectsUsingBlock:(void (^)(id, NSUInteger, BOOL *))block {
+    [_items enumerateObjectsUsingBlock:block];
+}
+
+static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumerationOptions opts) {
+    return (opts & (RSPagedItemsEnumerationReverse));
+}
+
+- (void)enumerateObjectsWithOptions:(RSPagedItemsEnumerationOptions)opts
+                         usingBlock:(void (^)(id, NSUInteger, BOOL *))block
+{
+    [_items enumerateObjectsWithOptions:pRS_PIC_NSEnumerationOptions(opts) usingBlock:block];
+}
+
+- (void)enumerateObjectsAtIndexes:(NSIndexSet *)indexSet options:(RSPagedItemsEnumerationOptions)opts
+                       usingBlock:(void (^)(id, NSUInteger, BOOL *))block
+{
+    [_items enumerateObjectsAtIndexes:indexSet options:pRS_PIC_NSEnumerationOptions(opts) usingBlock:block];
+}
+
+- (void)pRS_PIC_didChageItemsAtIndexes:(NSIndexSet *)indexes forChangeType:(RSPagedItemsChangeType)changeType {
     if (!indexes.count) {
         return;
     }
@@ -106,7 +130,7 @@
 
     [_items insertObjects:objects atIndexes:indexes];
 
-    [self _didChageItemsAtIndexes:indexes forChangeType:changeType];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes forChangeType:changeType];
 }
 
 - (void)loadItemsUsingBlock:(RSPagedItemsControllerLoadingBlock)block
@@ -164,7 +188,7 @@
 - (void)removeObjectsAtIndexes:(NSIndexSet *)indexes {
     [_items removeObjectsAtIndexes:indexes];
 
-    [self _didChageItemsAtIndexes:indexes forChangeType:RSPagedItemsChangeDelete];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes forChangeType:RSPagedItemsChangeDelete];
 }
 
 - (void)removeObjectsPassingTest:(BOOL (^)(id, NSUInteger))predicate {
@@ -180,7 +204,7 @@
         return NO;
     }];
 
-    [self _didChageItemsAtIndexes:[indexes copy] forChangeType:RSPagedItemsChangeDelete];
+    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] forChangeType:RSPagedItemsChangeDelete];
 }
 
 - (void)updateObjectsUsingBlock:(BOOL (^)(id, NSUInteger, BOOL *))block {
@@ -192,7 +216,7 @@
         }
     }];
 
-    [self _didChageItemsAtIndexes:[indexes copy] forChangeType:RSPagedItemsChangeUpdate];
+    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] forChangeType:RSPagedItemsChangeUpdate];
 }
 
 - (void)replaceObjectsUsingBlock:(id (^)(id, NSUInteger, BOOL *))block {
@@ -206,7 +230,7 @@
         }
     }];
 
-    [self _didChageItemsAtIndexes:[indexes copy] forChangeType:RSPagedItemsChangeReplace];
+    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] forChangeType:RSPagedItemsChangeReplace];
 }
 
 #pragma mark -
@@ -264,7 +288,7 @@
 
     [_items rs_insertObjects:[enumerator allObjects] atIndex:indexForInsert];
 
-    [self _didChageItemsAtIndexes:indexes forChangeType:changeType];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes forChangeType:changeType];
 }
 
 @end

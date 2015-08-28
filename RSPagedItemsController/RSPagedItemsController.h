@@ -33,6 +33,10 @@ typedef NS_ENUM(NSUInteger, RSPagedItemsChangeType) {
     RSPagedItemsChangeDelete
 };
 
+typedef NS_OPTIONS(NSUInteger, RSPagedItemsEnumerationOptions) {
+    RSPagedItemsEnumerationReverse = NSEnumerationReverse
+};
+
 typedef void(^RSPagedItemsControllerHandler)(NSArray *items);
 typedef void(^RSPagedItemsControllerLoadingBlock)(RSPagedItemsControllerHandler handler);
 
@@ -54,6 +58,14 @@ typedef void(^RSPagedItemsControllerLoadingBlock)(RSPagedItemsControllerHandler 
 - (void)loadInitialContentWithCompletion:(void (^)(BOOL success))completion;
 
 - (id)objectAtIndexedSubscript:(NSUInteger)idx;
+- (id)objectsAtIndexes:(NSIndexSet *)indexes;
+
+- (void)enumerateObjectsUsingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;
+- (void)enumerateObjectsWithOptions:(RSPagedItemsEnumerationOptions)opts
+                         usingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;
+- (void)enumerateObjectsAtIndexes:(NSIndexSet *)indexSet options:(RSPagedItemsEnumerationOptions)opts
+                       usingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;
+
 
 - (void)addObject:(id)obj;
 - (void)addObjects:(NSArray *)objects;
