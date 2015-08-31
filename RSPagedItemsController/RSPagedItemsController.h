@@ -40,6 +40,9 @@ typedef NS_OPTIONS(NSUInteger, RSPagedItemsEnumerationOptions) {
 typedef void(^RSPagedItemsControllerHandler)(NSArray *items);
 typedef void(^RSPagedItemsControllerLoadingBlock)(RSPagedItemsControllerHandler handler);
 
+extern NSString * const RSPagedItemsControllerIndexesKey;
+extern NSString * const RSPagedItemsControllerObjectsKey;
+
 @interface RSPagedItemsController : NSObject
 
 @property (nonatomic, readonly) id firstItem;
@@ -98,9 +101,13 @@ typedef void(^RSPagedItemsControllerLoadingBlock)(RSPagedItemsControllerHandler 
 
 
 @protocol RSPagedItemsControllerDelegate <NSObject>
+@optional
 
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
      didChangeItemsAtIndexes:(NSIndexSet *)indexes forChangeType:(RSPagedItemsChangeType)changeType;
+
+- (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
+       didChangeItemsForType:(RSPagedItemsChangeType)changeType userInfo:(NSDictionary *)userInfo;
 
 @end
 
