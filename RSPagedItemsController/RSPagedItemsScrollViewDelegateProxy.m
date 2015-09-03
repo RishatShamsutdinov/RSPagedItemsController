@@ -59,7 +59,8 @@
 - (BOOL)respondsToSelector:(SEL)aSelector {
     return ([_target respondsToSelector:aSelector] ||
             aSelector == @selector(scrollViewDidScroll:) ||
-            aSelector == @selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:));
+            aSelector == @selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:) ||
+            aSelector == @selector(scrollViewDidScrollToTop:));
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -81,6 +82,14 @@
 
     if (velocity.y) {
         [self handleContentOffset:*targetContentOffset ofScrollView:scrollView];
+    }
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView {
+    [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
+
+    if ([_target respondsToSelector:@selector(scrollViewDidScrollToTop:)]) {
+        [_target scrollViewDidScrollToTop:scrollView];
     }
 }
 
