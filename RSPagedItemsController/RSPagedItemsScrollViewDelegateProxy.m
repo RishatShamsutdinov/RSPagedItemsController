@@ -63,7 +63,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (!scrollView.decelerating) {
+    if (!scrollView.decelerating && scrollView.tracking) {
         [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
     }
 
