@@ -125,6 +125,11 @@
         contentSize.height = MAX(0, (contentSize.height - tableView.tableHeaderView.frame.size.height
                                      - tableView.tableFooterView.frame.size.height));
     }
+    else if ([_scrollView isKindOfClass:[UICollectionView class]]) {
+        UICollectionView *collectionView = (id)_scrollView;
+
+        contentSize = [collectionView.collectionViewLayout collectionViewContentSize];
+    }
 
     return contentSize;
 }
