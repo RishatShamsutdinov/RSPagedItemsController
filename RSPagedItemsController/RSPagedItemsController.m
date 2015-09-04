@@ -110,9 +110,20 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     if (changeType != RSPagedItemsChangeDelete) {
         [_items sortUsingDescriptors:_sortDescriptors];
 
-        indexes = [_items indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        NSIndexSet *newIndexes = [_items indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
             return ([objects indexOfObjectIdenticalTo:obj] != NSNotFound);
         }];
+
+        NSUInteger oldFirstIndex = indexes.firstIndex;
+        NSUInteger oldLastIndex = indexes.lastIndex;
+        NSUInteger newFirstIndex = newIndexes.firstIndex;
+        NSUInteger newLastIndex = newIndexes.lastIndex;
+
+        NSRange range;
+        range.location = MIN(oldFirstIndex, newFirstIndex);
+        range.length = MAX(oldLastIndex, newLastIndex) - range.location + 1;
+
+        indexes = [NSIndexSet indexSetWithIndexesInRange:range];
     }
 
     id delegate = self.delegate;
