@@ -72,6 +72,14 @@ NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObje
     return [_items objectsAtIndexes:indexes];
 }
 
+- (void)setSortDescriptors:(NSArray *)sortDescriptors {
+    if (_sortDescriptors != sortDescriptors) {
+        _sortDescriptors = sortDescriptors;
+
+        [_items sortUsingDescriptors:sortDescriptors];
+    }
+}
+
 - (void)enumerateObjectsUsingBlock:(void (^)(id, NSUInteger, BOOL *))block {
     [_items enumerateObjectsUsingBlock:block];
 }
@@ -97,6 +105,10 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 {
     if (!indexes.count) {
         return;
+    }
+
+    if (changeType != RSPagedItemsChangeDelete) {
+        [_items sortUsingDescriptors:_sortDescriptors];
     }
 
     id delegate = self.delegate;
