@@ -109,6 +109,10 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     if (changeType != RSPagedItemsChangeDelete) {
         [_items sortUsingDescriptors:_sortDescriptors];
+
+        indexes = [_items indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            return ([objects indexOfObjectIdenticalTo:obj] != NSNotFound);
+        }];
     }
 
     id delegate = self.delegate;
