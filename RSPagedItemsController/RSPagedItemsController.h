@@ -65,6 +65,15 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 - (id)objectAtIndexedSubscript:(NSUInteger)idx;
 - (id)objectsAtIndexes:(NSIndexSet *)indexes;
 
+- (BOOL)containsObject:(id)obj;
+- (BOOL)containsObjectIdenticalTo:(id)obj;
+
+- (NSUInteger)indexOfObject:(id)obj;
+- (NSUInteger)indexOfObjectIdenticalTo:(id)obj;
+- (NSUInteger)indexOfObjectPassingTest:(BOOL (^)(id obj, NSUInteger idx))predicate;
+
+- (NSIndexSet *)indexesOfObjectsPassingTest:(BOOL (^)(id obj, NSUInteger idx))predicate;
+
 - (void)enumerateObjectsUsingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;
 - (void)enumerateObjectsWithOptions:(RSPagedItemsEnumerationOptions)opts
                          usingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;

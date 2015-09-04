@@ -72,6 +72,34 @@ NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObje
     return [_items objectsAtIndexes:indexes];
 }
 
+- (BOOL)containsObject:(id)obj {
+    return [_items containsObject:obj];
+}
+
+- (BOOL)containsObjectIdenticalTo:(id)obj {
+    return ([_items indexOfObjectIdenticalTo:obj] != NSNotFound);
+}
+
+- (NSUInteger)indexOfObject:(id)obj {
+    return [_items indexOfObject:obj];
+}
+
+- (NSUInteger)indexOfObjectIdenticalTo:(id)obj {
+    return [_items indexOfObjectIdenticalTo:obj];
+}
+
+- (NSUInteger)indexOfObjectPassingTest:(BOOL (^)(id, NSUInteger))predicate {
+    return [_items indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        return predicate(obj, idx);
+    }];
+}
+
+- (NSIndexSet *)indexesOfObjectsPassingTest:(BOOL (^)(id, NSUInteger))predicate {
+    return [_items indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        return predicate(obj, idx);
+    }];
+}
+
 - (void)setSortDescriptors:(NSArray *)sortDescriptors {
     if (_sortDescriptors != sortDescriptors) {
         _sortDescriptors = sortDescriptors;
