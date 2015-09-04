@@ -87,6 +87,9 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 - (void)insertObject:(id)obj atIndex:(NSUInteger)index;
 - (void)insertObjects:(NSArray *)objects atIndex:(NSUInteger)index;
 
+- (void)removeObject:(id)obj;
+- (void)removeObjects:(NSArray *)objects;
+
 - (void)removeObjectsAtIndexes:(NSIndexSet *)indexes;
 - (void)removeObjectsPassingTest:(BOOL (^)(id obj, NSUInteger idx))predicate;
 

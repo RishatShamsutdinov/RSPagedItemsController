@@ -251,6 +251,24 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     } completion:completion];
 }
 
+- (void)removeObject:(id)obj {
+    NSUInteger index = [self indexOfObject:obj];
+
+    if (index != NSNotFound) {
+        [self removeObjectsAtIndexes:[NSIndexSet indexSetWithIndex:index]];
+    }
+}
+
+- (void)removeObjects:(NSArray *)objects {
+    NSIndexSet *indexes = [self indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx) {
+        return [objects containsObject:obj];
+    }];
+
+    if (indexes.count) {
+        [self removeObjectsAtIndexes:indexes];
+    }
+}
+
 - (void)removeObjectsAtIndexes:(NSIndexSet *)indexes {
     NSArray *objects = [_items objectsAtIndexes:indexes];
 
