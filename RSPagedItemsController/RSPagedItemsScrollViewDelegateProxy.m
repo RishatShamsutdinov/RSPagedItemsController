@@ -22,6 +22,7 @@
     id<UIScrollViewDelegate> __weak _target;
 
     CGPoint _prevContentOffset;
+    CGSize _prevContentSize;
 }
 
 @end
@@ -105,17 +106,20 @@
 
     NSNumber *edgeNum;
 
-    if (contentOffset.y <= scrollViewHeight && (contentOffset.y - _prevContentOffset.y < 0)) {
+    if (contentOffset.y <= scrollViewHeight &&
+        (contentOffset.y - _prevContentOffset.y < 0 || !CGSizeEqualToSize(contentSize, _prevContentSize)))
+    {
         edgeNum = @(RSScrollViewEdgeTop);
     }
 
     if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2) &&
-        (contentOffset.y - _prevContentOffset.y > 0))
+        (contentOffset.y - _prevContentOffset.y > 0 || !CGSizeEqualToSize(contentSize, _prevContentSize)))
     {
         edgeNum = @(RSScrollViewEdgeBottom);
     }
 
     _prevContentOffset = contentOffset;
+    _prevContentSize = contentSize;
 
     if (edgeNum) {
         RSScrollViewEdge edge;
