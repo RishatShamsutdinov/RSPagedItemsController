@@ -21,7 +21,7 @@
 @interface RSPagedItemsScrollViewDelegateProxy () <UIScrollViewDelegate> {
     id<UIScrollViewDelegate> __weak _target;
 
-    NSNumber *_prevEdgeNum;
+    CGPoint _prevContentOffset;
 }
 
 @end
@@ -105,19 +105,17 @@
 
     NSNumber *edgeNum;
 
-    if (contentOffset.y <= scrollViewHeight) {
+    if (contentOffset.y <= scrollViewHeight && (contentOffset.y - _prevContentOffset.y < 0)) {
         edgeNum = @(RSScrollViewEdgeTop);
     }
 
-    if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2)) {
+    if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2) &&
+        (contentOffset.y - _prevContentOffset.y > 0))
+    {
         edgeNum = @(RSScrollViewEdgeBottom);
     }
 
-    if (_prevEdgeNum && edgeNum && [_prevEdgeNum compare:edgeNum] == NSOrderedSame) {
-        return;
-    }
-
-    _prevEdgeNum = edgeNum;
+    _prevContentOffset = contentOffset;
 
     if (edgeNum) {
         RSScrollViewEdge edge;
