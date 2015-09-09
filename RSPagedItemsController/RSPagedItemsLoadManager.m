@@ -21,6 +21,7 @@
 
 @interface RSPagedItemsLoadManager () <RSPagedItemsLoaderDelegate, RSPagedItemsScrollViewDelegateProxyDelegate> {
     UIScrollView __weak *_scrollView;
+    id<UIScrollViewDelegate> __weak _originalDelegate;
     RSPagedItemsScrollViewDelegateProxy *_scrollViewDelegateProxy;
 
     id<RSPagedItemsLoader> _loader;
@@ -57,6 +58,7 @@
                 scrollViewEdge:(RSScrollViewEdge)scrollViewEdge
 {
     if (self = [self init]) {
+        _originalDelegate = scrollView.delegate;
         _scrollViewDelegateProxy = [RSPagedItemsScrollViewDelegateProxy proxyWithTarget:scrollView.delegate
                                                                                delegate:self];
 
@@ -319,6 +321,10 @@
 
         [_loader loadMoreIfNeededWithCompletion:completion];
     }];
+}
+
+- (void)dealloc {
+    _scrollView.delegate = _originalDelegate;
 }
 
 @end
