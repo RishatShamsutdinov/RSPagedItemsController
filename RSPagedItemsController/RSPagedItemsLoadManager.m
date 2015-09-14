@@ -270,17 +270,19 @@
                 [delegate pagedItemsLoadManager:self didLoadItems:items initial:initial];
             }
 
-            CGSize contentSize = [self contentSizeOfElementsInScrollView];
+            rs_dispatch_async_main(^{
+                CGSize contentSize = [self contentSizeOfElementsInScrollView];
 
-            if (contentSize.height < _scrollView.bounds.size.height && self.enableLoading) {
-                [self queueOperationForLoader:pagedItemsLoader withBlock:^{
+                if (contentSize.height < _scrollView.bounds.size.height && self.enableLoading) {
+                    [self queueOperationForLoader:pagedItemsLoader withBlock:^{
+                        _readyForLoading = YES;
+
+                        [self tryToLoadMoreWithScrollViewEdge:self.scrollViewEdge];
+                    }];
+                } else {
                     _readyForLoading = YES;
-
-                    [self tryToLoadMoreWithScrollViewEdge:self.scrollViewEdge];
-                }];
-            } else {
-                _readyForLoading = YES;
-            }
+                }
+            });
         });
     }]] waitUntilFinished:YES];
 }
