@@ -1,13 +1,13 @@
 /**
  *
  * Copyright 2015 Rishat Shamsutdinov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,6 @@
     id<UIScrollViewDelegate> __weak _target;
 
     CGPoint _prevContentOffset;
-    CGSize _prevContentSize;
 }
 
 @end
@@ -61,7 +60,8 @@
     return ([_target respondsToSelector:aSelector] ||
             aSelector == @selector(scrollViewDidScroll:) ||
             aSelector == @selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:) ||
-            aSelector == @selector(scrollViewDidScrollToTop:));
+            aSelector == @selector(scrollViewDidScrollToTop:) ||
+            aSelector == @selector(scrollViewShouldScrollToTop:));
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -86,6 +86,20 @@
     }
 }
 
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView {
+    BOOL shouldScrollToTop = YES;
+
+    if ([_target respondsToSelector:@selector(scrollViewShouldScrollToTop:)]) {
+        shouldScrollToTop = [_target scrollViewShouldScrollToTop:scrollView];
+    }
+
+    if (shouldScrollToTop) {
+        _prevContentOffset = scrollView.contentOffset;
+    }
+
+    return shouldScrollToTop;
+}
+
 - (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView {
     [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
 
@@ -106,26 +120,21 @@
 
     NSNumber *edgeNum;
 
-    if (contentOffset.y <= scrollViewHeight &&
-        (contentOffset.y - _prevContentOffset.y < 0 || !CGSizeEqualToSize(contentSize, _prevContentSize)))
-    {
+    if (contentOffset.y <= scrollViewHeight && contentOffset.y - _prevContentOffset.y < 0) {
         edgeNum = @(RSScrollViewEdgeTop);
     }
 
-    if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2) &&
-        (contentOffset.y - _prevContentOffset.y > 0 || !CGSizeEqualToSize(contentSize, _prevContentSize)))
-    {
+    if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2) && contentOffset.y - _prevContentOffset.y > 0) {
         edgeNum = @(RSScrollViewEdgeBottom);
     }
 
     _prevContentOffset = contentOffset;
-    _prevContentSize = contentSize;
 
     if (edgeNum) {
         RSScrollViewEdge edge;
 
         [edgeNum getValue:&edge];
-
+        
         [delegate scrollView:scrollView willScrollToEdge:edge];
     }
 }
