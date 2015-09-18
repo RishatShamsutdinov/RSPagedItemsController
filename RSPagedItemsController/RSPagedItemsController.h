@@ -116,7 +116,8 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 @optional
 
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
-     didChangeItemsAtIndexes:(NSIndexSet *)indexes forChangeType:(RSPagedItemsChangeType)changeType;
+     didChangeItemsAtIndexes:(NSIndexSet *)indexes forChangeType:(RSPagedItemsChangeType)changeType
+__attribute__((deprecated("Use pagedItemsController:didChangeItemsForType:userInfo: instead.")));
 
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
        didChangeItemsForType:(RSPagedItemsChangeType)changeType userInfo:(NSDictionary *)userInfo;

@@ -367,10 +367,10 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 }
 
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
-     didChangeItemsAtIndexes:(NSIndexSet *)indexes forChangeType:(RSPagedItemsChangeType)changeType
+       didChangeItemsForType:(RSPagedItemsChangeType)changeType userInfo:(NSDictionary *)userInfo
 {
     NSInteger section = [self sectionOfPagedItemsController:pagedItemsController];
-    NSArray *indexPaths = [indexes rs_indexPathsForRowsInSection:section];
+    NSArray *indexPaths = [userInfo[RSPagedItemsControllerIndexesKey] rs_indexPathsForRowsInSection:section];
 
     switch (changeType) {
         case RSPagedItemsChangeReplace:
