@@ -50,8 +50,6 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 
 @property (nonatomic, readonly) NSUInteger itemsCount;
 
-@property (nonatomic) NSArray *sortDescriptors;
-
 @property (nonatomic, weak) id<RSPagedItemsControllerDelegate> delegate;
 
 

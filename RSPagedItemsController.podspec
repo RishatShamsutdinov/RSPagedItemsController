@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "RSPagedItemsController"
-  s.version      = "0.6.3"
+  s.version      = "1.0.0"
   s.summary      = "No summary yet."
 
   s.description  = <<-DESC

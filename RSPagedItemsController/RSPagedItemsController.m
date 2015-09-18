@@ -100,14 +100,6 @@ NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObje
     }];
 }
 
-- (void)setSortDescriptors:(NSArray *)sortDescriptors {
-    if (_sortDescriptors != sortDescriptors) {
-        _sortDescriptors = sortDescriptors;
-
-        [_items sortUsingDescriptors:sortDescriptors];
-    }
-}
-
 - (void)enumerateObjectsUsingBlock:(void (^)(id, NSUInteger, BOOL *))block {
     [_items enumerateObjectsUsingBlock:block];
 }
@@ -133,25 +125,6 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 {
     if (!indexes.count) {
         return;
-    }
-
-    if (changeType != RSPagedItemsChangeDelete) {
-        [_items sortUsingDescriptors:_sortDescriptors];
-
-        NSIndexSet *newIndexes = [_items indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-            return ([objects indexOfObjectIdenticalTo:obj] != NSNotFound);
-        }];
-
-        NSUInteger oldFirstIndex = indexes.firstIndex;
-        NSUInteger oldLastIndex = indexes.lastIndex;
-        NSUInteger newFirstIndex = newIndexes.firstIndex;
-        NSUInteger newLastIndex = newIndexes.lastIndex;
-
-        NSRange range;
-        range.location = MIN(oldFirstIndex, newFirstIndex);
-        range.length = MAX(oldLastIndex, newLastIndex) - range.location + 1;
-
-        indexes = [NSIndexSet indexSetWithIndexesInRange:range];
     }
 
     id delegate = self.delegate;
