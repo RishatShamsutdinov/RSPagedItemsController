@@ -50,6 +50,11 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 
 @property (nonatomic, readonly) NSUInteger itemsCount;
 
+/**
+ * Default is YES.
+ */
+@property (nonatomic) BOOL enableAutoLoading;
+
 @property (nonatomic, weak) id<RSPagedItemsControllerDelegate> delegate;
 
 

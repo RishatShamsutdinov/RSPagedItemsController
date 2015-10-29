@@ -50,6 +50,14 @@ NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObje
     return self;
 }
 
+- (BOOL)enableAutoLoading {
+    return _itemsLoadManager.enableLoading;
+}
+
+- (void)setEnableAutoLoading:(BOOL)enableAutoLoading {
+    _itemsLoadManager.enableLoading = enableAutoLoading;
+}
+
 #pragma mark - Working with items
 
 - (NSUInteger)itemsCount {
