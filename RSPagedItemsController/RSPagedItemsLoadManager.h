@@ -29,7 +29,7 @@
 
 @property (nonatomic, readonly) RSScrollViewEdge scrollViewEdge;
 @property (nonatomic, readonly) RSPagedItemsScrollViewDelegateProxy *scrollViewDelegateProxy;
-@property (nonatomic, readonly) id<RSPagedItemsLoadManagerDelegate> delegate;
+@property (nonatomic, weak, readonly) id<RSPagedItemsLoadManagerDelegate> delegate;
 
 /**
  * Default value is YES
