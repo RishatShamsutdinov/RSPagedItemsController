@@ -19,6 +19,8 @@
 #import "RSPagedItemsLoadManager.h"
 #import "RSFoundationUtils.h"
 
+static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
+
 @interface RSPagedItemsLoadManager () <RSPagedItemsLoaderDelegate, RSPagedItemsScrollViewDelegateProxyDelegate> {
     UIScrollView __weak *_scrollView;
     id<UIScrollViewDelegate> __weak _originalDelegate;
@@ -270,19 +272,21 @@
                 [delegate pagedItemsLoadManager:self didLoadItems:items initial:initial];
             }
 
-            rs_dispatch_async_main(^{
-                CGSize contentSize = [self contentSizeOfElementsInScrollView];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kDelayAfterItemsLoad * NSEC_PER_SEC)),
+                           dispatch_get_main_queue(),
+                           ^{
+                               CGSize contentSize = [self contentSizeOfElementsInScrollView];
 
-                if (contentSize.height < _scrollView.bounds.size.height && self.enableLoading) {
-                    [self queueOperationForLoader:pagedItemsLoader withBlock:^{
-                        _readyForLoading = YES;
+                               if (contentSize.height < _scrollView.bounds.size.height && self.enableLoading) {
+                                   [self queueOperationForLoader:pagedItemsLoader withBlock:^{
+                                       _readyForLoading = YES;
 
-                        [self tryToLoadMoreWithScrollViewEdge:self.scrollViewEdge];
-                    }];
-                } else {
-                    _readyForLoading = YES;
-                }
-            });
+                                       [self tryToLoadMoreWithScrollViewEdge:self.scrollViewEdge];
+                                   }];
+                               } else {
+                                   _readyForLoading = YES;
+                               }
+                           });
         });
     }]] waitUntilFinished:YES];
 }
@@ -326,7 +330,12 @@
 }
 
 - (void)dealloc {
-    _scrollView.delegate = _originalDelegate;
+    UIScrollView *scrollView = _scrollView;
+    id<UIScrollViewDelegate> __weak originalDelegate = _originalDelegate;
+
+    rs_dispatch_async_main(^{
+        scrollView.delegate = originalDelegate;
+    });
 }
 
 @end
