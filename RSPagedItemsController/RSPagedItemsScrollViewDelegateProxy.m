@@ -61,7 +61,8 @@
             aSelector == @selector(scrollViewDidScroll:) ||
             aSelector == @selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:) ||
             aSelector == @selector(scrollViewDidScrollToTop:) ||
-            aSelector == @selector(scrollViewShouldScrollToTop:));
+            aSelector == @selector(scrollViewShouldScrollToTop:) ||
+            aSelector == @selector(scrollViewDidEndDecelerating:));
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -108,6 +109,14 @@
     }
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
+
+    if ([_target respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [_target scrollViewDidEndDecelerating:scrollView];
+    }
+}
+
 - (void)handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView {
     id delegate = self.delegate;
 
@@ -122,13 +131,16 @@
 
     if (contentOffset.y <= scrollViewHeight && contentOffset.y - _prevContentOffset.y < 0) {
         edgeNum = @(RSScrollViewEdgeTop);
+
+        _prevContentOffset = CGPointMake(contentOffset.x, -scrollView.contentInset.top);
     }
 
     if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2) && contentOffset.y - _prevContentOffset.y > 0) {
         edgeNum = @(RSScrollViewEdgeBottom);
-    }
 
-    _prevContentOffset = contentOffset;
+        _prevContentOffset = CGPointMake(contentOffset.x,
+                                         contentSize.height - scrollViewHeight + scrollView.contentInset.bottom);
+    }
 
     if (edgeNum) {
         RSScrollViewEdge edge;
