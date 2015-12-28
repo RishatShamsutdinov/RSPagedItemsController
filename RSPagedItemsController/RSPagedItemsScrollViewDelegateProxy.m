@@ -61,7 +61,8 @@
             aSelector == @selector(scrollViewDidScroll:) ||
             aSelector == @selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:) ||
             aSelector == @selector(scrollViewDidScrollToTop:) ||
-            aSelector == @selector(scrollViewShouldScrollToTop:));
+            aSelector == @selector(scrollViewShouldScrollToTop:) ||
+            aSelector == @selector(scrollViewDidEndDecelerating:));
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -105,6 +106,14 @@
 
     if ([_target respondsToSelector:@selector(scrollViewDidScrollToTop:)]) {
         [_target scrollViewDidScrollToTop:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
+
+    if ([_target respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [_target scrollViewDidEndDecelerating:scrollView];
     }
 }
 
