@@ -40,6 +40,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
     BOOL _readyForLoading;
     BOOL _firstInitialLoad;
+    BOOL _needsLoadMore;
 
     NSPointerArray *_operations;
 }
@@ -239,13 +240,15 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 }
 
 - (void)tryToLoadMoreWithScrollViewEdge:(RSScrollViewEdge)edge {
-    if (!_readyForLoading) {
-        return;
-    }
-
     CGSize contentSize = [self contentSizeOfElementsInScrollView];
 
     if (contentSize.height && edge == self.scrollViewEdge) {
+        if (!_readyForLoading) {
+            _needsLoadMore = YES;
+            return;
+        }
+
+        _needsLoadMore = NO;
         _readyForLoading = NO;
 
         [_loader loadMoreIfNeededWithCompletion:nil];
@@ -279,7 +282,9 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
                        ^{
                            CGSize contentSize = [self contentSizeOfElementsInScrollView];
 
-                           if (contentSize.height < _scrollView.bounds.size.height && self.enableLoading) {
+                           if (self.enableLoading &&
+                               (_needsLoadMore || contentSize.height < _scrollView.bounds.size.height))
+                           {
                                [self queueOperationForLoader:pagedItemsLoader withBlock:^{
                                    _readyForLoading = YES;
 
@@ -288,6 +293,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
                            } else {
                                _readyForLoading = YES;
                            }
+
+                           _needsLoadMore = NO;
                        });
     }]] waitUntilFinished:YES];
 }
