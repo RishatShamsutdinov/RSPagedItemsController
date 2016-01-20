@@ -15,6 +15,8 @@
 		FD26D4251B70A26E00843575 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD26D4241B70A26E00843575 /* UIKit.framework */; };
 		FD26D4291B70A3C900843575 /* RSPagedItemsScrollViewDelegateProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = FD26D4281B70A3C900843575 /* RSPagedItemsScrollViewDelegateProxy.m */; };
 		FD26D4301B70B74800843575 /* NSIndexSet+RSPagedItems.m in Sources */ = {isa = PBXBuildFile; fileRef = FD26D42F1B70B74800843575 /* NSIndexSet+RSPagedItems.m */; };
+		FD4F8F301C4F8D5600D4B49B /* NSMutableArray+RSPagedItemsCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FD4F8F2F1C4F8D5600D4B49B /* NSMutableArray+RSPagedItemsCollection.m */; };
+		FD4F8F331C4F8FBA00D4B49B /* NSMutableOrderedSet+RSPagedItemsCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FD4F8F321C4F8FBA00D4B49B /* NSMutableOrderedSet+RSPagedItemsCollection.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,11 @@
 		FD26D42C1B70B54E00843575 /* RSPagedItemsLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSPagedItemsLoader.h; sourceTree = "<group>"; };
 		FD26D42E1B70B74800843575 /* NSIndexSet+RSPagedItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexSet+RSPagedItems.h"; sourceTree = "<group>"; };
 		FD26D42F1B70B74800843575 /* NSIndexSet+RSPagedItems.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexSet+RSPagedItems.m"; sourceTree = "<group>"; };
+		FD4F8F2D1C4F8C7600D4B49B /* RSPagedItemsCollectionProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSPagedItemsCollectionProtocol.h; sourceTree = "<group>"; };
+		FD4F8F2E1C4F8D5600D4B49B /* NSMutableArray+RSPagedItemsCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+RSPagedItemsCollection.h"; sourceTree = "<group>"; };
+		FD4F8F2F1C4F8D5600D4B49B /* NSMutableArray+RSPagedItemsCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+RSPagedItemsCollection.m"; sourceTree = "<group>"; };
+		FD4F8F311C4F8FBA00D4B49B /* NSMutableOrderedSet+RSPagedItemsCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableOrderedSet+RSPagedItemsCollection.h"; sourceTree = "<group>"; };
+		FD4F8F321C4F8FBA00D4B49B /* NSMutableOrderedSet+RSPagedItemsCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableOrderedSet+RSPagedItemsCollection.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +122,11 @@
 			children = (
 				FD26D42E1B70B74800843575 /* NSIndexSet+RSPagedItems.h */,
 				FD26D42F1B70B74800843575 /* NSIndexSet+RSPagedItems.m */,
+				FD4F8F2E1C4F8D5600D4B49B /* NSMutableArray+RSPagedItemsCollection.h */,
+				FD4F8F2F1C4F8D5600D4B49B /* NSMutableArray+RSPagedItemsCollection.m */,
+				FD4F8F311C4F8FBA00D4B49B /* NSMutableOrderedSet+RSPagedItemsCollection.h */,
+				FD4F8F321C4F8FBA00D4B49B /* NSMutableOrderedSet+RSPagedItemsCollection.m */,
+				FD4F8F2D1C4F8C7600D4B49B /* RSPagedItemsCollectionProtocol.h */,
 				FD26D4081B70A04100843575 /* RSPagedItemsController.h */,
 				FD26D40A1B70A04100843575 /* RSPagedItemsController.m */,
 				FD26D42C1B70B54E00843575 /* RSPagedItemsLoader.h */,
@@ -199,7 +211,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = RS;
-				LastUpgradeCheck = 0640;
+				LastUpgradeCheck = 0720;
 				TargetAttributes = {
 					FD26D4041B70A04100843575 = {
 						CreatedOnToolsVersion = 6.4;
@@ -279,6 +291,8 @@
 				FD26D40B1B70A04100843575 /* RSPagedItemsController.m in Sources */,
 				FD26D4291B70A3C900843575 /* RSPagedItemsScrollViewDelegateProxy.m in Sources */,
 				FD26D4211B70A22D00843575 /* RSPagedItemsLoadManager.m in Sources */,
+				FD4F8F331C4F8FBA00D4B49B /* NSMutableOrderedSet+RSPagedItemsCollection.m in Sources */,
+				FD4F8F301C4F8D5600D4B49B /* NSMutableArray+RSPagedItemsCollection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,6 +334,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -418,6 +433,7 @@
 				);
 				INFOPLIST_FILE = RSPagedItemsControllerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ru.rees.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -432,6 +448,7 @@
 				);
 				INFOPLIST_FILE = RSPagedItemsControllerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ru.rees.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -22,6 +22,7 @@
 #import "RSPagedItemsTypes.h"
 #import "RSPagedItemsLoader.h"
 #import "NSIndexSet+RSPagedItems.h"
+#import "RSPagedItemsCollectionProtocol.h"
 
 @protocol RSPagedItemsControllerDelegate, RSPaLoad;
 
@@ -59,6 +60,10 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 
 
 + (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate;
++ (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate
+                       collectionClass:(Class<RSPagedItemsCollection>)aClass;
+
+- (instancetype)initWithCollectionClass:(Class<RSPagedItemsCollection>)aClass;
 
 - (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
                     usingLoader:(id<RSPagedItemsLoader>)loader;

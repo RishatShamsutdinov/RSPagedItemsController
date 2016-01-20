@@ -19,12 +19,14 @@
 #import "RSPagedItemsController.h"
 #import "RSPagedItemsLoadManager.h"
 #import "RSFoundationUtils.h"
+#import "NSMutableArray+RSPagedItemsCollection.h"
 
 NSString * const RSPagedItemsControllerIndexesKey = @"RSPagedItemsControllerIndexesKey";
 NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObjectsKey";
 
 @interface RSPagedItemsController () <RSPagedItemsLoadManagerDelegate> {
-    NSMutableArray *_items;
+    id<RSPagedItemsCollection> _items;
+    BOOL _collectionAllowsDuplicates;
     NSUUID *_itemsUUID;
 
     RSPagedItemsLoadManager *_itemsLoadManager;
@@ -35,7 +37,13 @@ NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObje
 @implementation RSPagedItemsController
 
 + (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate {
-    RSPagedItemsController *controller = [self new];
+    return [self controllerWithDelegate:delegate collectionClass:nil];
+}
+
++ (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate
+                       collectionClass:(__unsafe_unretained Class<RSPagedItemsCollection>)aClass
+{
+    RSPagedItemsController *controller = [[self alloc] initWithCollectionClass:aClass];
 
     controller.delegate = delegate;
 
@@ -43,8 +51,13 @@ NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObje
 }
 
 - (instancetype)init {
+    return [self initWithCollectionClass:nil];
+}
+
+- (instancetype)initWithCollectionClass:(Class<RSPagedItemsCollection>)aClass {
     if (self = [super init]) {
-        _items = [NSMutableArray new];
+        _items = [[(id)(aClass ?: [NSMutableArray class]) alloc] init];
+        _collectionAllowsDuplicates = [[_items class] allowsDuplicates];
     }
 
     return self;
@@ -169,11 +182,17 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 }
 
 - (void)_insertObjects:(NSArray *)objects atIndex:(NSUInteger)index withChangeType:(RSPagedItemsChangeType)changeType {
+    if (objects.count && !_collectionAllowsDuplicates) {
+        objects = [objects rs_filteredArrayUsingBlock:^BOOL(id obj) {
+            return ![_items containsObject:obj];
+        }];
+    }
+
     if (!objects.count) {
         return;
     }
 
-    NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(index, objects.count)];
+    NSMutableIndexSet *indexes = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(index, objects.count)];
 
     [_items insertObjects:objects atIndexes:indexes];
 
@@ -262,7 +281,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     NSMutableArray *objects = [NSMutableArray new];
     NSMutableIndexSet *indexes = [NSMutableIndexSet new];
 
-    [_items rs_removeObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+    [_items removeObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
         if (predicate(obj, idx)) {
             [indexes addIndex:idx];
             [objects addObject:obj];
@@ -333,6 +352,12 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     NSEnumerator *enumerator;
     NSUInteger indexForInsert;
 
+    if (items.count && !_collectionAllowsDuplicates) {
+        items = [items rs_filteredArrayUsingBlock:^BOOL(id obj) {
+            return ![_items containsObject:obj];
+        }];
+    }
+
     if (initial) {
         _itemsUUID = [NSUUID UUID];
 
@@ -361,7 +386,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     NSArray *objects = [enumerator allObjects];
 
-    [_items rs_insertObjects:objects atIndex:indexForInsert];
+    [_items insertObjects:objects atIndex:indexForInsert];
 
     [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:changeType];
 }
