@@ -16,7 +16,7 @@
     return YES;
 }
 
-- (void)insertObjects:(NSArray *)objects atIndex:(NSInteger)index {
+- (void)insertObjects:(NSArray *)objects atIndex:(NSUInteger)index {
     [self rs_insertObjects:objects atIndex:index];
 }
 

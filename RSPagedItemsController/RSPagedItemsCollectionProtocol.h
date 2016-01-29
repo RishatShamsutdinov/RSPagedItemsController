@@ -36,7 +36,7 @@
                        usingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;
 
 - (void)insertObjects:(NSArray *)objects atIndexes:(NSIndexSet *)indexes;
-- (void)insertObjects:(NSArray *)objects atIndex:(NSInteger)index;
+- (void)insertObjects:(NSArray *)objects atIndex:(NSUInteger)index;
 
 - (void)removeObjectsAtIndexes:(NSIndexSet *)indexes;
 - (void)removeObjectsPassingTest:(BOOL (^)(id, NSUInteger, BOOL *))predicate;
