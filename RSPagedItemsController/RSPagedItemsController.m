@@ -58,6 +58,7 @@ NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObje
     if (self = [super init]) {
         _items = [[(id)(aClass ?: [NSMutableArray class]) alloc] init];
         _collectionAllowsDuplicates = [[_items class] allowsDuplicates];
+        _clearItemsOnReplace = YES;
     }
 
     return self;
@@ -299,10 +300,16 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     NSMutableIndexSet *indexes = [NSMutableIndexSet new];
     NSMutableArray *objects = [NSMutableArray new];
 
+    BOOL invalidateHash = [_items respondsToSelector:@selector(invalidateHashOfObjectAtIndex:)];
+
     [_items enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if (block(obj, idx, stop)) {
             [indexes addIndex:idx];
             [objects addObject:obj];
+
+            if (invalidateHash) {
+                [_items invalidateHashOfObjectAtIndex:idx];
+            }
         }
     }];
 
@@ -363,7 +370,9 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
         changeType = RSPagedItemsChangeReplace;
 
-        [_items removeAllObjects];
+        if (self.clearItemsOnReplace) {
+            [_items removeAllObjects];
+        }
     }
 
     if (_itemsLoadManager.scrollViewEdge == RSScrollViewEdgeTop) {

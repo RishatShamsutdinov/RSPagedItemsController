@@ -42,4 +42,8 @@
 - (void)removeObjectsPassingTest:(BOOL (^)(id, NSUInteger, BOOL *))predicate;
 - (void)removeAllObjects;
 
+@optional
+
+- (void)invalidateHashOfObjectAtIndex:(NSUInteger)idx;
+
 @end

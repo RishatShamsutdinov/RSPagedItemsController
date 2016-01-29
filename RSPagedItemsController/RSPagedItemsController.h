@@ -55,6 +55,7 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
  * Default is YES.
  */
 @property (nonatomic) BOOL enableAutoLoading;
+@property (nonatomic) BOOL clearItemsOnReplace;
 
 @property (nonatomic, weak) id<RSPagedItemsControllerDelegate> delegate;
 
