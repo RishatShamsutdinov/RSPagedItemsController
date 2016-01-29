@@ -35,6 +35,8 @@
 - (void)enumerateObjectsAtIndexes:(NSIndexSet *)indexes options:(NSEnumerationOptions)opts
                        usingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;
 
+- (void)setObject:(id)anObject atIndexedSubscript:(NSUInteger)index;
+
 - (void)insertObjects:(NSArray *)objects atIndexes:(NSIndexSet *)indexes;
 - (void)insertObjects:(NSArray *)objects atIndex:(NSUInteger)index;
 

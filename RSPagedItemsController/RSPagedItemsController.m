@@ -293,7 +293,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         return NO;
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] withObjects:[objects copy] forType:RSPagedItemsChangeDelete];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete];
 }
 
 - (void)updateObjectsUsingBlock:(BOOL (^)(id, NSUInteger, BOOL *))block {
@@ -313,7 +313,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         }
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] withObjects:[objects copy] forType:RSPagedItemsChangeUpdate];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeUpdate];
 }
 
 - (void)replaceObjectsUsingBlock:(id (^)(id, NSUInteger, BOOL *))block {
@@ -325,11 +325,17 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
         if (newObj != obj) {
             [indexes addIndex:idx];
-            [objects addObject:obj];
+            [objects addObject:newObj];
         }
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] withObjects:[objects copy] forType:RSPagedItemsChangeReplace];
+    NSUInteger __block currentObjectsIdx = 0;
+
+    [indexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        _items[idx] = objects[currentObjectsIdx++];
+    }];
+
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeReplace];
 }
 
 #pragma mark -
