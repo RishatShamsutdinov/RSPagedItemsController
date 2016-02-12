@@ -22,6 +22,8 @@
     id<UIScrollViewDelegate> __weak _target;
 
     CGPoint _prevContentOffset;
+
+    NSMapTable<NSString *, NSMethodSignature *> *_methodSignaturesCache;
 }
 
 @end
@@ -40,6 +42,7 @@
 
 - (instancetype)initWithTarget:(id<UIScrollViewDelegate>)target {
     _target = target;
+    _methodSignaturesCache = [NSMapTable strongToStrongObjectsMapTable];
 
     return self;
 }
@@ -53,7 +56,16 @@
         return [[self class] instanceMethodSignatureForSelector:sel];
     }
 
-    return [(NSObject *)_target methodSignatureForSelector:sel];
+    NSString *key = NSStringFromSelector(sel);
+    NSMethodSignature *methodSig = [_methodSignaturesCache objectForKey:key];
+
+    if (!methodSig) {
+        methodSig = [(NSObject *)_target methodSignatureForSelector:sel];
+
+        [_methodSignaturesCache setObject:methodSig forKey:key];
+    }
+
+    return methodSig;
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
