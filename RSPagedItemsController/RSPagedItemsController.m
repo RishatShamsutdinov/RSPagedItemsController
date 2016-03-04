@@ -187,6 +187,10 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         objects = [objects rs_filteredArrayUsingBlock:^BOOL(id obj) {
             return ![_items containsObject:obj];
         }];
+
+        if (objects.count > 1) {
+            objects = [NSOrderedSet orderedSetWithArray:objects].array;
+        }
     }
 
     if (!objects.count) {
@@ -369,6 +373,10 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         items = [items rs_filteredArrayUsingBlock:^BOOL(id obj) {
             return ![_items containsObject:obj];
         }];
+
+        if (items.count > 1) {
+            items = [NSOrderedSet orderedSetWithArray:items].array;
+        }
     }
 
     if (initial) {
