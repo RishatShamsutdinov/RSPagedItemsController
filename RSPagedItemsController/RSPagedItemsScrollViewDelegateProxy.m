@@ -140,7 +140,7 @@
 }
 
 - (void)handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView {
-    [self handleContentOffset:contentOffset ofScrollView:scrollView];
+    [self handleContentOffset:contentOffset ofScrollView:scrollView forced:NO];
 }
 
 - (void)handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView forced:(BOOL)forced {
