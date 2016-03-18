@@ -46,6 +46,7 @@
 		2C9130032F4F46BB53F2110B /* Pods-RSPagedItemsController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsController.release.xcconfig"; path = "Pods/Target Support Files/Pods-RSPagedItemsController/Pods-RSPagedItemsController.release.xcconfig"; sourceTree = "<group>"; };
 		80AE962BE07133FD49009B12 /* Pods-RSPagedItemsController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsController.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RSPagedItemsController/Pods-RSPagedItemsController.debug.xcconfig"; sourceTree = "<group>"; };
 		DC13C25D74F603E6CFD7AB1A /* libPods-RSPagedItemsController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RSPagedItemsController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD016F351C9BEBA900480A48 /* RSScrollViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSScrollViewDelegate.h; sourceTree = "<group>"; };
 		FD26D4051B70A04100843575 /* libRSPagedItemsController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRSPagedItemsController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD26D4081B70A04100843575 /* RSPagedItemsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSPagedItemsController.h; sourceTree = "<group>"; };
 		FD26D40A1B70A04100843575 /* RSPagedItemsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RSPagedItemsController.m; sourceTree = "<group>"; };
@@ -135,6 +136,7 @@
 				FD26D4271B70A3C900843575 /* RSPagedItemsScrollViewDelegateProxy.h */,
 				FD26D4281B70A3C900843575 /* RSPagedItemsScrollViewDelegateProxy.m */,
 				FD26D42A1B70B4AB00843575 /* RSPagedItemsTypes.h */,
+				FD016F351C9BEBA900480A48 /* RSScrollViewDelegate.h */,
 			);
 			path = RSPagedItemsController;
 			sourceTree = "<group>";
