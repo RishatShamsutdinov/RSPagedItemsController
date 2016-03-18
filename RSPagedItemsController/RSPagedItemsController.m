@@ -300,6 +300,20 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete];
 }
 
+- (void)removeAllObjects {
+    NSMutableArray *objects = [NSMutableArray arrayWithCapacity:_items.count];
+
+    [_items enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [objects addObject:obj];
+    }];
+
+    [_items removeAllObjects];
+
+    NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _items.count)];
+
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete];
+}
+
 - (void)updateObjectsUsingBlock:(BOOL (^)(id, NSUInteger, BOOL *))block {
     NSMutableIndexSet *indexes = [NSMutableIndexSet new];
     NSMutableArray *objects = [NSMutableArray new];

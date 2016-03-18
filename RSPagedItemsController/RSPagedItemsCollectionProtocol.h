@@ -27,7 +27,7 @@
 
 - (NSIndexSet *)indexesOfObjectsPassingTest:(BOOL (^)(id obj, NSUInteger idx, BOOL *stop))predicate;
 
-- (void)enumerateObjectsUsingBlock:(void (^)(id, NSUInteger, BOOL *))block;
+- (void)enumerateObjectsUsingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;
 
 - (void)enumerateObjectsWithOptions:(NSEnumerationOptions)opts
                          usingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;

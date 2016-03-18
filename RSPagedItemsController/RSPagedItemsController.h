@@ -102,6 +102,8 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 - (void)removeObjectsAtIndexes:(NSIndexSet *)indexes;
 - (void)removeObjectsPassingTest:(BOOL (^)(id obj, NSUInteger idx))predicate;
 
+- (void)removeAllObjects;
+
 /**
  * @param block returns YES if `obj` was updated
  */
