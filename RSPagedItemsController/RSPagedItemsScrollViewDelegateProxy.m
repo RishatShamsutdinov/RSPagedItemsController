@@ -133,6 +133,10 @@
 
 - (void)rs_scrollViewDidChangeContentSize:(UIScrollView *)scrollView {
     [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView forced:YES];
+
+    if ([_target respondsToSelector:@selector(rs_scrollViewDidChangeContentSize:)]) {
+        [(id<RSScrollViewDelegate>)_target rs_scrollViewDidChangeContentSize:scrollView];
+    }
 }
 
 - (void)handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView {
