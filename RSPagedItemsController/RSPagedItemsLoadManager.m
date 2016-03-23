@@ -344,6 +344,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 - (void)dealloc {
     ASSERT_MAIN_THREAD
 
+    [self hideActivityIndicatorForScrollViewIfNeeded:_scrollView];
+
     _scrollView.delegate = _originalDelegate;
 }
 
