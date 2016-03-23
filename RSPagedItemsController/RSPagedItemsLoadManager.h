@@ -38,7 +38,9 @@
 
 + (instancetype)managerWithLoader:(id<RSPagedItemsLoader>)pagedItemsLoader
                          delegate:(id<RSPagedItemsLoadManagerDelegate>)delegate
-                    forScrollView:(UIScrollView *)scrollView scrollViewEdge:(RSScrollViewEdge)scrollViewEdge;
+                    forScrollView:(UIScrollView *)scrollView
+                   scrollViewEdge:(RSScrollViewEdge)scrollViewEdge
+          allowsActivityIndicator:(BOOL)allowsActivityIndicator;
 
 - (void)loadInitialContentWithCompletion:(void (^)(BOOL success))completion;
 

@@ -361,6 +361,12 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 - (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
                     usingLoader:(id<RSPagedItemsLoader>)loader
 {
+    [self integrateWithScrollView:scrollView onEdge:edge allowsActivityIndicator:YES usingLoader:loader];
+}
+
+- (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
+        allowsActivityIndicator:(BOOL)allowsActivityIndicator usingLoader:(id<RSPagedItemsLoader>)loader
+{
     if (_itemsLoadManager) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:@"Already integrated with scroll view"
@@ -368,7 +374,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     }
 
     _itemsLoadManager = [RSPagedItemsLoadManager managerWithLoader:loader delegate:self
-                                                     forScrollView:scrollView scrollViewEdge:edge];
+                                                     forScrollView:scrollView scrollViewEdge:edge
+                                           allowsActivityIndicator:allowsActivityIndicator];
 }
 
 - (void)loadInitialContentWithCompletion:(void (^)(BOOL))completion {

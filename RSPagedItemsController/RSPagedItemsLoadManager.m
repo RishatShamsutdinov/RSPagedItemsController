@@ -55,9 +55,12 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
                          delegate:(id<RSPagedItemsLoadManagerDelegate>)delegate
                     forScrollView:(UIScrollView *)scrollView
                    scrollViewEdge:(RSScrollViewEdge)scrollViewEdge
+          allowsActivityIndicator:(BOOL)allowsActivityIndicator
 {
-    RSPagedItemsLoadManager *manager = [[self alloc] initWithLoader:pagedItemsLoader scrollView:scrollView
-                                                     scrollViewEdge:scrollViewEdge];
+    RSPagedItemsLoadManager *manager = [[self alloc] initWithLoader: pagedItemsLoader
+                                                         scrollView: scrollView
+                                                     scrollViewEdge: scrollViewEdge
+                                            allowsActivityIndicator: allowsActivityIndicator];
 
     manager.delegate = delegate;
 
@@ -65,7 +68,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 }
 
 - (instancetype)initWithLoader:(id<RSPagedItemsLoader>)loader scrollView:(UIScrollView *)scrollView
-                scrollViewEdge:(RSScrollViewEdge)scrollViewEdge
+                scrollViewEdge:(RSScrollViewEdge)scrollViewEdge allowsActivityIndicator:(BOOL)allowsActivityIndicator
 {
     if (self = [self init]) {
         _originalDelegate = scrollView.delegate;
@@ -84,7 +87,9 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
         _operations = [NSPointerArray weakObjectsPointerArray];
 
-        [self configureActivityIndicator];
+        if (allowsActivityIndicator) {
+            [self configureActivityIndicator];
+        }
     }
     
     return self;
@@ -169,7 +174,9 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 #pragma mark - Appearance of activity indicator
 
 - (void)showActivityIndicatorForScrollViewIfNeeded:(UIScrollView *)scrollView {
-    if (_activityIndicatorViewContainer.superview || ![scrollView isKindOfClass:[UITableView class]]) {
+    if (!_activityIndicatorViewContainer || _activityIndicatorViewContainer.superview ||
+        ![scrollView isKindOfClass:[UITableView class]])
+    {
         return;
     }
 
