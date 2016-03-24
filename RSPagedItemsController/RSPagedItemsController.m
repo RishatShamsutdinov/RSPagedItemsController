@@ -145,7 +145,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 - (void)pRS_PIC_didChageItemsAtIndexes:(NSIndexSet *)indexes withObjects:(NSArray *)objects
                                forType:(RSPagedItemsChangeType)changeType
 {
-    if (!indexes.count) {
+    if (!indexes.count && changeType != RSPagedItemsChangeReplace) {
         return;
     }
 
