@@ -331,21 +331,19 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
         [op cancel];
     }
 
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        _readyForLoading = NO;
+    _readyForLoading = NO;
 
-        if (!_firstInitialLoad) {
-            _loader.delegate = nil;
+    if (!_firstInitialLoad) {
+        _loader.delegate = nil;
 
-            _loader = [_loader loaderByResettingCursor];
+        _loader = [_loader loaderByResettingCursor];
 
-            _loader.delegate = self;
-        }
+        _loader.delegate = self;
+    }
 
-        _firstInitialLoad = NO;
+    _firstInitialLoad = NO;
 
-        [_loader loadMoreIfNeededWithCompletion:completion];
-    }];
+    [_loader loadMoreIfNeededWithCompletion:completion];
 }
 
 - (void)dealloc {
