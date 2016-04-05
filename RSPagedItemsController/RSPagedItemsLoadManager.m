@@ -154,7 +154,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     void __block (^copiedBlock)() = [block copy];
 
     NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
-        if (loader != _loader) {
+        if (loader != _loader || _loader == nil) {
             return;
         }
 
@@ -346,12 +346,23 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     [_loader loadMoreIfNeededWithCompletion:completion];
 }
 
-- (void)dealloc {
+- (void)disintegrate {
     ASSERT_MAIN_THREAD
 
     [self hideActivityIndicatorForScrollViewIfNeeded:_scrollView];
 
     _scrollView.delegate = _originalDelegate;
+
+    _originalDelegate = nil;
+    _scrollView = nil;
+    _scrollViewDelegateProxy = nil;
+    _activityIndicatorView = nil;
+    _activityIndicatorViewContainer = nil;
+    _loader = nil;
+
+    for (NSOperation *op in _operations) {
+        [op cancel];
+    }
 }
 
 @end

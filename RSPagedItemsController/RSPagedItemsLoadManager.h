@@ -44,6 +44,8 @@
 
 - (void)loadInitialContentWithCompletion:(void (^)(BOOL success))completion;
 
+- (void)disintegrate;
+
 @end
 
 #pragma mark -

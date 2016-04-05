@@ -378,6 +378,10 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
                                            allowsActivityIndicator:allowsActivityIndicator];
 }
 
+- (void)disintegrate {
+    [_itemsLoadManager disintegrate];
+}
+
 - (void)loadInitialContentWithCompletion:(void (^)(BOOL))completion {
     [_itemsLoadManager loadInitialContentWithCompletion:completion];
 }

@@ -69,6 +69,8 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 - (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
                     usingLoader:(id<RSPagedItemsLoader>)loader;
 
+- (void)disintegrate;
+
 - (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
         allowsActivityIndicator:(BOOL)allowsActivityIndicator usingLoader:(id<RSPagedItemsLoader>)loader;
 
