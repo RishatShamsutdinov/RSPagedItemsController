@@ -17,7 +17,7 @@
  */
 
 #import "RSPagedItemsController.h"
-#import "RSPagedItemsLoadManager.h"
+#import "RSPagedItemsLoadManager_Private.h"
 #import "RSFoundationUtils.h"
 #import "NSMutableArray+RSPagedItemsCollection.h"
 
@@ -36,29 +36,38 @@ NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObje
 
 @implementation RSPagedItemsController
 
-+ (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate {
-    return [self controllerWithDelegate:delegate collectionClass:nil];
++ (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate
+                                  edge:(RSScrollViewEdge)edge loader:(id<RSPagedItemsLoader>)loader
+               allowsActivityIndicator:(BOOL)allowsActivityIndicator
+{
+    return [self controllerWithDelegate:delegate collectionClass:nil edge:edge
+                                 loader:loader allowsActivityIndicator:allowsActivityIndicator];
 }
 
 + (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate
                        collectionClass:(__unsafe_unretained Class<RSPagedItemsCollection>)aClass
+                                  edge:(RSScrollViewEdge)edge loader:(id<RSPagedItemsLoader>)loader
+               allowsActivityIndicator:(BOOL)allowsActivityIndicator
 {
-    RSPagedItemsController *controller = [[self alloc] initWithCollectionClass:aClass];
+    RSPagedItemsController *controller = [[self alloc] initWithCollectionClass:aClass edge:edge loader:loader
+                                                       allowsActivityIndicator:allowsActivityIndicator];
 
     controller.delegate = delegate;
 
     return controller;
 }
 
-- (instancetype)init {
-    return [self initWithCollectionClass:nil];
-}
-
-- (instancetype)initWithCollectionClass:(Class<RSPagedItemsCollection>)aClass {
+- (instancetype)initWithCollectionClass:(Class<RSPagedItemsCollection>)aClass
+                                   edge:(RSScrollViewEdge)edge loader:(id<RSPagedItemsLoader>)loader
+                allowsActivityIndicator:(BOOL)allowsActivityIndicator
+{
     if (self = [super init]) {
         _items = [[(id)(aClass ?: [NSMutableArray class]) alloc] init];
         _collectionAllowsDuplicates = [[_items class] allowsDuplicates];
         _clearItemsOnReplace = YES;
+
+        _itemsLoadManager = [RSPagedItemsLoadManager managerWithLoader:loader delegate:self scrollViewEdge:edge
+                                               allowsActivityIndicator:allowsActivityIndicator];
     }
 
     return self;
@@ -151,10 +160,6 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     id delegate = self.delegate;
 
-    if ([delegate respondsToSelector:@selector(pagedItemsController:didChangeItemsAtIndexes:forChangeType:)]) {
-        [delegate pagedItemsController:self didChangeItemsAtIndexes:indexes forChangeType:changeType];
-    }
-
     if ([delegate respondsToSelector:@selector(pagedItemsController:didChangeItemsForType:userInfo:)]) {
         [delegate pagedItemsController:self didChangeItemsForType:changeType
                               userInfo:@{RSPagedItemsControllerIndexesKey: indexes,
@@ -185,7 +190,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 - (void)_insertObjects:(NSArray *)objects atIndex:(NSUInteger)index withChangeType:(RSPagedItemsChangeType)changeType {
     if (objects.count && !_collectionAllowsDuplicates) {
         objects = [objects rs_filteredArrayUsingBlock:^BOOL(id obj) {
-            return ![_items containsObject:obj];
+            return ![self->_items containsObject:obj];
         }];
 
         if (objects.count > 1) {
@@ -205,8 +210,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 }
 
 - (void)loadItemsUsingBlock:(RSPagedItemsControllerLoadingBlock)block
-                withHandler:(void (^)(NSArray *items))handler completion:(void (^)())completion {
-
+                withHandler:(void (^)(NSArray *items))handler completion:(void (^)())completion
+{
     if (!_itemsUUID) {
         return;
     }
@@ -245,8 +250,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 }
 
 - (void)insertObjectsAtItemsBeginningUsingBlock:(RSPagedItemsControllerLoadingBlock)block
-                                     completion:(void (^)())completion {
-
+                                     completion:(void (^)())completion
+{
     typeof(self) __weak weakSelf = self;
 
     [self loadItemsUsingBlock:block withHandler:^(NSArray *items) {
@@ -326,7 +331,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
             [objects addObject:obj];
 
             if (invalidateHash) {
-                [_items invalidateHashOfObjectAtIndex:idx];
+                [self->_items invalidateHashOfObjectAtIndex:idx];
             }
         }
     }];
@@ -350,7 +355,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     NSUInteger __block currentObjectsIdx = 0;
 
     [indexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-        _items[idx] = objects[currentObjectsIdx++];
+        self->_items[idx] = objects[currentObjectsIdx++];
     }];
 
     [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeReplace];
@@ -358,24 +363,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
 #pragma mark -
 
-- (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
-                    usingLoader:(id<RSPagedItemsLoader>)loader
-{
-    [self integrateWithScrollView:scrollView onEdge:edge allowsActivityIndicator:YES usingLoader:loader];
-}
-
-- (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
-        allowsActivityIndicator:(BOOL)allowsActivityIndicator usingLoader:(id<RSPagedItemsLoader>)loader
-{
-    if (_itemsLoadManager) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"Already integrated with scroll view"
-                                     userInfo:nil];
-    }
-
-    _itemsLoadManager = [RSPagedItemsLoadManager managerWithLoader:loader delegate:self
-                                                     forScrollView:scrollView scrollViewEdge:edge
-                                           allowsActivityIndicator:allowsActivityIndicator];
+- (void)integrateWithScrollView:(UIScrollView *)scrollView {
+    [_itemsLoadManager integrateWithScrollView:scrollView];
 }
 
 - (void)disintegrate {
@@ -396,7 +385,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     if (items.count && !_collectionAllowsDuplicates) {
         items = [items rs_filteredArrayUsingBlock:^BOOL(id obj) {
-            return ![_items containsObject:obj];
+            return ![self->_items containsObject:obj];
         }];
 
         if (items.count > 1) {

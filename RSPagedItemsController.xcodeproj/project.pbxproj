@@ -47,6 +47,7 @@
 		80AE962BE07133FD49009B12 /* Pods-RSPagedItemsController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsController.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RSPagedItemsController/Pods-RSPagedItemsController.debug.xcconfig"; sourceTree = "<group>"; };
 		DC13C25D74F603E6CFD7AB1A /* libPods-RSPagedItemsController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RSPagedItemsController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD016F351C9BEBA900480A48 /* RSScrollViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSScrollViewDelegate.h; sourceTree = "<group>"; };
+		FD1EFC2A1DA63F2200D581DD /* RSPagedItemsLoadManager_Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSPagedItemsLoadManager_Private.h; sourceTree = "<group>"; };
 		FD26D4051B70A04100843575 /* libRSPagedItemsController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRSPagedItemsController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD26D4081B70A04100843575 /* RSPagedItemsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSPagedItemsController.h; sourceTree = "<group>"; };
 		FD26D40A1B70A04100843575 /* RSPagedItemsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RSPagedItemsController.m; sourceTree = "<group>"; };
@@ -131,6 +132,7 @@
 				FD26D4081B70A04100843575 /* RSPagedItemsController.h */,
 				FD26D40A1B70A04100843575 /* RSPagedItemsController.m */,
 				FD26D42C1B70B54E00843575 /* RSPagedItemsLoader.h */,
+				FD1EFC2A1DA63F2200D581DD /* RSPagedItemsLoadManager_Private.h */,
 				FD26D41F1B70A22D00843575 /* RSPagedItemsLoadManager.h */,
 				FD26D4201B70A22D00843575 /* RSPagedItemsLoadManager.m */,
 				FD26D4271B70A3C900843575 /* RSPagedItemsScrollViewDelegateProxy.h */,
@@ -213,7 +215,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = RS;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				TargetAttributes = {
 					FD26D4041B70A04100843575 = {
 						CreatedOnToolsVersion = 6.4;
@@ -329,8 +331,11 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -372,8 +377,11 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "RSPagedItemsController"
-  s.version      = "2.2.7"
+  s.version      = "3.0.0"
   s.summary      = "No summary yet."
 
   s.description  = <<-DESC
@@ -18,6 +18,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/RishatShamsutdinov/RSPagedItemsController.git", :tag => "v" + s.version.to_s }
 
   s.source_files = "RSPagedItemsController/**/*.{h,m}"
+  s.private_header_files = "RSPagedItemsController/**/*_Private.h"
 
   s.framework  = "UIKit"
   # s.frameworks = "SomeFramework", "AnotherFramework"

@@ -16,7 +16,7 @@
  *
  */
 
-#import "RSPagedItemsLoadManager.h"
+#import "RSPagedItemsLoadManager_Private.h"
 #import "RSFoundationUtils.h"
 
 static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
@@ -42,7 +42,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     BOOL _firstInitialLoad;
     BOOL _needsLoadMore;
 
-    NSPointerArray *_operations;
+    NSOperationQueue *_operationQueue;
 }
 
 @end
@@ -53,12 +53,10 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
 + (instancetype)managerWithLoader:(id<RSPagedItemsLoader>)pagedItemsLoader
                          delegate:(id<RSPagedItemsLoadManagerDelegate>)delegate
-                    forScrollView:(UIScrollView *)scrollView
                    scrollViewEdge:(RSScrollViewEdge)scrollViewEdge
           allowsActivityIndicator:(BOOL)allowsActivityIndicator
 {
     RSPagedItemsLoadManager *manager = [[self alloc] initWithLoader: pagedItemsLoader
-                                                         scrollView: scrollView
                                                      scrollViewEdge: scrollViewEdge
                                             allowsActivityIndicator: allowsActivityIndicator];
 
@@ -67,25 +65,33 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     return manager;
 }
 
-- (instancetype)initWithLoader:(id<RSPagedItemsLoader>)loader scrollView:(UIScrollView *)scrollView
-                scrollViewEdge:(RSScrollViewEdge)scrollViewEdge allowsActivityIndicator:(BOOL)allowsActivityIndicator
+- (instancetype)initWithLoader:(id<RSPagedItemsLoader>)loader scrollViewEdge:(RSScrollViewEdge)scrollViewEdge
+       allowsActivityIndicator:(BOOL)allowsActivityIndicator
 {
     if (self = [self init]) {
-        _originalDelegate = scrollView.delegate;
-        _scrollViewDelegateProxy = [RSPagedItemsScrollViewDelegateProxy proxyWithTarget:scrollView.delegate
-                                                                               delegate:self];
+        dispatch_queue_attr_t queueAttr;
 
-        scrollView.delegate = (id)_scrollViewDelegateProxy;
+        if (&dispatch_queue_attr_make_with_qos_class) {
+            queueAttr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
+        } else {
+            queueAttr = DISPATCH_QUEUE_SERIAL;
+        }
 
-        _scrollView = scrollView;
+        dispatch_queue_t underlyingQueue = dispatch_queue_create("ru.rees.items-load-manager", queueAttr);
+
+        dispatch_set_target_queue(underlyingQueue, dispatch_get_main_queue());
+
+        _operationQueue = [NSOperationQueue new];
+        _operationQueue.maxConcurrentOperationCount = 1;
+        _operationQueue.underlyingQueue = underlyingQueue;
+        _operationQueue.suspended = YES;
+
         _scrollViewEdge = scrollViewEdge;
         _enableLoading = YES;
         _firstInitialLoad = YES;
 
         _loader = loader;
         _loader.delegate = self;
-
-        _operations = [NSPointerArray weakObjectsPointerArray];
 
         if (allowsActivityIndicator) {
             [self configureActivityIndicator];
@@ -132,6 +138,38 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     _activityIndicatorViewContainer.frame = CGRectMake(0, 0, size.width, size.height);
 }
 
+- (void)integrateWithScrollView:(UIScrollView *)scrollView {
+    assert(_scrollView == nil);
+
+    _originalDelegate = scrollView.delegate;
+    _scrollViewDelegateProxy = [RSPagedItemsScrollViewDelegateProxy proxyWithTarget: scrollView.delegate
+                                                                           delegate: self];
+
+    scrollView.delegate = (id)_scrollViewDelegateProxy;
+
+    _scrollView = scrollView;
+
+    _operationQueue.suspended = NO;
+}
+
+- (void)disintegrate {
+    ASSERT_MAIN_THREAD
+
+    [_operationQueue setSuspended:YES];
+    [_operationQueue cancelAllOperations];
+
+    [self hideActivityIndicatorForScrollViewIfNeeded:_scrollView];
+
+    _scrollView.delegate = _originalDelegate;
+
+    _originalDelegate = nil;
+    _scrollView = nil;
+    _scrollViewDelegateProxy = nil;
+    _activityIndicatorView = nil;
+    _activityIndicatorViewContainer = nil;
+    _loader = nil;
+}
+
 - (CGSize)contentSizeOfElementsInScrollView {
     CGSize contentSize = _scrollView.contentSize;
 
@@ -153,22 +191,23 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 - (NSBlockOperation *)blockOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)())block {
     void __block (^copiedBlock)() = [block copy];
 
+    typeof(self) __weak weakSelf = self;
+
     NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
-        if (loader != _loader || _loader == nil) {
-            return;
-        }
+        voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+            if (loader != self->_loader || self->_loader == nil) {
+                return;
+            }
 
-        copiedBlock();
+            copiedBlock();
+        });
     }];
-
-    [_operations compact];
-    [_operations addPointer:(__bridge void *)op];
 
     return op;
 }
 
 - (void)queueOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)())block {
-    [[NSOperationQueue mainQueue] addOperation:[self blockOperationForLoader:loader withBlock:block]];
+    [_operationQueue addOperation:[self blockOperationForLoader:loader withBlock:block]];
 }
 
 #pragma mark - Appearance of activity indicator
@@ -239,8 +278,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
         typeof(self) __weak weakSelf = self;
 
         [self queueOperationForLoader:_loader withBlock:^{
-            voidWithStrongSelf(weakSelf, ^(typeof(self) strongSelf) {
-                [strongSelf tryToLoadMoreWithScrollViewEdge:edge];
+            voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+                [self tryToLoadMoreWithScrollViewEdge:edge];
             });
         }];
     }
@@ -265,58 +304,79 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 #pragma mark - RSPagedItemsLoaderDelegate
 
 - (void)pagedItemsLoaderDidStartLoading:(id<RSPagedItemsLoader>)pagedItemsLoader {
+    typeof(self) __weak weakSelf = self;
+
     [self queueOperationForLoader:pagedItemsLoader withBlock:^{
-        [self showActivityIndicatorForScrollViewIfNeeded:_scrollView];
+        voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+            [self showActivityIndicatorForScrollViewIfNeeded:self->_scrollView];
+        });
     }];
 }
 
 - (void)pagedItemsLoaderDidFinishLoading:(id<RSPagedItemsLoader>)pagedItemsLoader {
+    typeof(self) __weak weakSelf = self;
+
     [self queueOperationForLoader:pagedItemsLoader withBlock:^{
-        [self hideActivityIndicatorForScrollViewIfNeeded:_scrollView];
+        voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+            [self hideActivityIndicatorForScrollViewIfNeeded:self->_scrollView];
+        });
     }];
 }
 
 - (void)pagedItemsLoader:(id<RSPagedItemsLoader>)pagedItemsLoader didLoadItems:(NSArray *)items initial:(BOOL)initial {
-    [[NSOperationQueue mainQueue] addOperations:@[[self blockOperationForLoader:pagedItemsLoader withBlock:^{
-        id delegate = self.delegate;
+    typeof(self) __weak weakSelf = self;
 
-        if ([delegate respondsToSelector:@selector(pagedItemsLoadManager:didLoadItems:initial:)]) {
-            [delegate pagedItemsLoadManager:self didLoadItems:items initial:initial];
-        }
+    [_operationQueue addOperations:@[[self blockOperationForLoader:pagedItemsLoader withBlock:^{
+        voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+            id delegate = self.delegate;
 
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kDelayAfterItemsLoad * NSEC_PER_SEC)),
-                       dispatch_get_main_queue(),
-                       ^{
-                           CGSize contentSize = [self contentSizeOfElementsInScrollView];
+            if ([delegate respondsToSelector:@selector(pagedItemsLoadManager:didLoadItems:initial:)]) {
+                [delegate pagedItemsLoadManager:self didLoadItems:items initial:initial];
+            }
 
-                           if (self.enableLoading &&
-                               (_needsLoadMore || contentSize.height < _scrollView.bounds.size.height))
-                           {
-                               [self queueOperationForLoader:pagedItemsLoader withBlock:^{
-                                   _readyForLoading = YES;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kDelayAfterItemsLoad * NSEC_PER_SEC)),
+                           dispatch_get_main_queue(),
+                           ^{
+                               voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+                                   CGSize contentSize = [self contentSizeOfElementsInScrollView];
 
-                                   [self tryToLoadMoreWithScrollViewEdge:self.scrollViewEdge];
-                               }];
-                           } else {
-                               _readyForLoading = YES;
-                           }
+                                   if (self.enableLoading &&
+                                       (self->_needsLoadMore ||
+                                        contentSize.height < self->_scrollView.bounds.size.height))
+                                   {
+                                       [self queueOperationForLoader:pagedItemsLoader withBlock:^{
+                                           voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+                                               self->_readyForLoading = YES;
 
-                           _needsLoadMore = NO;
-                       });
+                                               [self tryToLoadMoreWithScrollViewEdge:self.scrollViewEdge];
+                                           });
+                                       }];
+                                   } else {
+                                       self->_readyForLoading = YES;
+                                   }
+                                   
+                                   self->_needsLoadMore = NO;
+                               });
+                           });
+        });
     }]] waitUntilFinished:YES];
 }
 
 - (void)pagedItemsLoader:(id<RSPagedItemsLoader>)pagedItemsLoader didFailLoadWithError:(NSError *)error
                  initial:(BOOL)initial
 {
-    [[NSOperationQueue mainQueue] addOperations:@[[self blockOperationForLoader:pagedItemsLoader withBlock:^{
-        _readyForLoading = YES;
+    typeof(self) __weak weakSelf = self;
 
-        id delegate = self.delegate;
+    [_operationQueue addOperations:@[[self blockOperationForLoader:pagedItemsLoader withBlock:^{
+        voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+            self->_readyForLoading = YES;
 
-        if ([delegate respondsToSelector:@selector(pagedItemsLoader:didFailLoadWithError:initial:)]) {
-            [delegate pagedItemsLoadManager:self didFailLoadWithError:error initial:initial];
-        }
+            id delegate = self.delegate;
+
+            if ([delegate respondsToSelector:@selector(pagedItemsLoader:didFailLoadWithError:initial:)]) {
+                [delegate pagedItemsLoadManager:self didFailLoadWithError:error initial:initial];
+            }
+        });
     }]] waitUntilFinished:YES];
 }
 
@@ -325,11 +385,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 - (void)loadInitialContentWithCompletion:(void (^)(BOOL success))completion {
     ASSERT_MAIN_THREAD
 
-    [_operations compact];
-
-    for (NSOperation *op in _operations) {
-        [op cancel];
-    }
+    [_operationQueue cancelAllOperations];
 
     _readyForLoading = NO;
 
@@ -344,25 +400,6 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     _firstInitialLoad = NO;
 
     [_loader loadMoreIfNeededWithCompletion:completion];
-}
-
-- (void)disintegrate {
-    ASSERT_MAIN_THREAD
-
-    [self hideActivityIndicatorForScrollViewIfNeeded:_scrollView];
-
-    _scrollView.delegate = _originalDelegate;
-
-    _originalDelegate = nil;
-    _scrollView = nil;
-    _scrollViewDelegateProxy = nil;
-    _activityIndicatorView = nil;
-    _activityIndicatorViewContainer = nil;
-    _loader = nil;
-
-    for (NSOperation *op in _operations) {
-        [op cancel];
-    }
 }
 
 @end

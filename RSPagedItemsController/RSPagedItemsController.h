@@ -60,19 +60,25 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 @property (nonatomic, weak) id<RSPagedItemsControllerDelegate> delegate;
 
 
-+ (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
++ (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate edge:(RSScrollViewEdge)edge
+                                loader:(id<RSPagedItemsLoader>)loader
+               allowsActivityIndicator:(BOOL)allowsActivityIndicator;
+
 + (instancetype)controllerWithDelegate:(id<RSPagedItemsControllerDelegate>)delegate
-                       collectionClass:(Class<RSPagedItemsCollection>)aClass;
+                       collectionClass:(Class<RSPagedItemsCollection>)aClass
+                                  edge:(RSScrollViewEdge)edge loader:(id<RSPagedItemsLoader>)loader
+               allowsActivityIndicator:(BOOL)allowsActivityIndicator;
 
-- (instancetype)initWithCollectionClass:(Class<RSPagedItemsCollection>)aClass;
+- (instancetype)initWithCollectionClass:(Class<RSPagedItemsCollection>)aClass
+                                   edge:(RSScrollViewEdge)edge loader:(id<RSPagedItemsLoader>)loader
+                allowsActivityIndicator:(BOOL)allowsActivityIndicator;
 
-- (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
-                    usingLoader:(id<RSPagedItemsLoader>)loader;
+- (void)integrateWithScrollView:(UIScrollView *)scrollView;
 
 - (void)disintegrate;
-
-- (void)integrateWithScrollView:(UIScrollView *)scrollView onEdge:(RSScrollViewEdge)edge
-        allowsActivityIndicator:(BOOL)allowsActivityIndicator usingLoader:(id<RSPagedItemsLoader>)loader;
 
 - (void)loadInitialContentWithCompletion:(void (^)(BOOL success))completion;
 
@@ -132,10 +138,6 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 
 @protocol RSPagedItemsControllerDelegate <NSObject>
 @optional
-
-- (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
-     didChangeItemsAtIndexes:(NSIndexSet *)indexes forChangeType:(RSPagedItemsChangeType)changeType
-__attribute__((deprecated("Use pagedItemsController:didChangeItemsForType:userInfo: instead.")));
 
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
        didChangeItemsForType:(RSPagedItemsChangeType)changeType userInfo:(NSDictionary *)userInfo;
