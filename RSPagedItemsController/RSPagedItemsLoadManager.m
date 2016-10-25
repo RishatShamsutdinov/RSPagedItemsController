@@ -139,6 +139,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 }
 
 - (void)integrateWithScrollView:(UIScrollView *)scrollView {
+    ASSERT_MAIN_THREAD
+
     assert(_scrollView == nil);
 
     _originalDelegate = scrollView.delegate;
@@ -155,8 +157,12 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 - (void)disintegrate {
     ASSERT_MAIN_THREAD
 
-    [_operationQueue setSuspended:YES];
     [_operationQueue cancelAllOperations];
+    [_operationQueue setSuspended:NO];
+
+    [_operationQueue addOperationWithBlock:^{
+        self->_operationQueue.suspended = (self->_scrollView == nil);
+    }];
 
     [self hideActivityIndicatorForScrollViewIfNeeded:_scrollView];
 
