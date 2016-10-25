@@ -43,6 +43,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     BOOL _needsLoadMore;
 
     NSOperationQueue *_operationQueue;
+
+    uint64_t _token;
 }
 
 @end
@@ -69,22 +71,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
        allowsActivityIndicator:(BOOL)allowsActivityIndicator
 {
     if (self = [self init]) {
-        dispatch_queue_attr_t queueAttr;
-
-        if (&dispatch_queue_attr_make_with_qos_class) {
-            queueAttr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
-        } else {
-            queueAttr = DISPATCH_QUEUE_SERIAL;
-        }
-
-        dispatch_queue_t underlyingQueue = dispatch_queue_create("ru.rees.items-load-manager", queueAttr);
-
-        dispatch_set_target_queue(underlyingQueue, dispatch_get_main_queue());
-
-        _operationQueue = [NSOperationQueue new];
-        _operationQueue.maxConcurrentOperationCount = 1;
-        _operationQueue.underlyingQueue = underlyingQueue;
-        _operationQueue.suspended = YES;
+        [self configureOperationQueue];
 
         _scrollViewEdge = scrollViewEdge;
         _enableLoading = YES;
@@ -138,6 +125,27 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     _activityIndicatorViewContainer.frame = CGRectMake(0, 0, size.width, size.height);
 }
 
+- (void)configureOperationQueue {
+    _token++;
+
+    dispatch_queue_attr_t queueAttr;
+
+    if (&dispatch_queue_attr_make_with_qos_class) {
+        queueAttr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
+    } else {
+        queueAttr = DISPATCH_QUEUE_SERIAL;
+    }
+
+    dispatch_queue_t underlyingQueue = dispatch_queue_create("ru.rees.items-load-manager", queueAttr);
+
+    dispatch_set_target_queue(underlyingQueue, dispatch_get_main_queue());
+
+    _operationQueue = [NSOperationQueue new];
+    _operationQueue.maxConcurrentOperationCount = 1;
+    _operationQueue.underlyingQueue = underlyingQueue;
+    _operationQueue.suspended = (_scrollView == nil);
+}
+
 - (void)integrateWithScrollView:(UIScrollView *)scrollView {
     ASSERT_MAIN_THREAD
 
@@ -161,10 +169,6 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     [_operationQueue cancelAllOperations];
     [_operationQueue setSuspended:NO];
 
-    [_operationQueue addOperationWithBlock:^{
-        self->_operationQueue.suspended = (self->_scrollView == nil);
-    }];
-
     [self hideActivityIndicatorForScrollViewIfNeeded:_scrollView];
 
     _scrollView.delegate = _originalDelegate;
@@ -175,6 +179,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     _activityIndicatorView = nil;
     _activityIndicatorViewContainer = nil;
     _loader = nil;
+
+    [self configureOperationQueue];
 }
 
 - (CGSize)contentSizeOfElementsInScrollView {
@@ -198,11 +204,13 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 - (NSBlockOperation *)blockOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)())block {
     void __block (^copiedBlock)() = [block copy];
 
+    typeof(_token) token = _token;
+
     typeof(self) __weak weakSelf = self;
 
     NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
         voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
-            if (loader != self->_loader || self->_loader == nil) {
+            if (loader != self->_loader || self->_loader == nil || self->_token != token) {
                 return;
             }
 
@@ -393,6 +401,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     ASSERT_MAIN_THREAD
 
     [_operationQueue cancelAllOperations];
+
+    _token++;
 
     _readyForLoading = NO;
 
