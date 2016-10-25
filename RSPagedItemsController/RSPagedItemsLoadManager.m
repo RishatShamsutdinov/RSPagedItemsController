@@ -142,6 +142,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     ASSERT_MAIN_THREAD
 
     assert(_scrollView == nil);
+    assert(scrollView != nil);
 
     _originalDelegate = scrollView.delegate;
     _scrollViewDelegateProxy = [RSPagedItemsScrollViewDelegateProxy proxyWithTarget: scrollView.delegate
