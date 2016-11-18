@@ -411,4 +411,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     [_loader loadMoreIfNeededWithCompletion:completion];
 }
 
+- (void)dealloc {
+    assert(_loader == nil);
+}
+
 @end
