@@ -44,6 +44,9 @@ typedef void(^RSPagedItemsControllerLoadingBlock)(RSPagedItemsControllerHandler 
 extern NSString * const RSPagedItemsControllerIndexesKey;
 extern NSString * const RSPagedItemsControllerObjectsKey;
 
+/**
+ * @warning Call \c disintegrate before dealloc.
+ */
 @interface RSPagedItemsController : NSObject
 
 @property (nonatomic, readonly) id firstItem;
@@ -78,6 +81,9 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 
 - (void)integrateWithScrollView:(UIScrollView *)scrollView;
 
+/**
+ * @warning Must be called before dealloc.
+ */
 - (void)disintegrate;
 
 - (void)loadInitialContentWithCompletion:(void (^)(BOOL success))completion;

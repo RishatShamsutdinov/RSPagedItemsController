@@ -43,8 +43,6 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     BOOL _needsLoadMore;
 
     NSOperationQueue *_operationQueue;
-
-    uint64_t _token;
 }
 
 @end
@@ -126,8 +124,6 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 }
 
 - (void)configureOperationQueue {
-    _token++;
-
     dispatch_queue_attr_t queueAttr;
 
     if (&dispatch_queue_attr_make_with_qos_class) {
@@ -151,6 +147,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
     assert(_scrollView == nil);
     assert(scrollView != nil);
+    assert(_loader != nil);
 
     _originalDelegate = scrollView.delegate;
     _scrollViewDelegateProxy = [RSPagedItemsScrollViewDelegateProxy proxyWithTarget: scrollView.delegate
@@ -178,9 +175,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     _scrollViewDelegateProxy = nil;
     _activityIndicatorView = nil;
     _activityIndicatorViewContainer = nil;
+    _loader.delegate = nil;
     _loader = nil;
-
-    [self configureOperationQueue];
 }
 
 - (CGSize)contentSizeOfElementsInScrollView {
@@ -204,13 +200,11 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 - (NSBlockOperation *)blockOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)())block {
     void __block (^copiedBlock)() = [block copy];
 
-    typeof(_token) token = _token;
-
     typeof(self) __weak weakSelf = self;
 
     NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
         voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
-            if (loader != self->_loader || self->_loader == nil || self->_token != token) {
+            if (loader != self->_loader || self->_loader == nil) {
                 return;
             }
 
@@ -401,8 +395,6 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     ASSERT_MAIN_THREAD
 
     [_operationQueue cancelAllOperations];
-
-    _token++;
 
     _readyForLoading = NO;
 
