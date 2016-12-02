@@ -140,6 +140,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     _operationQueue.maxConcurrentOperationCount = 1;
     _operationQueue.underlyingQueue = underlyingQueue;
     _operationQueue.suspended = (_scrollView == nil);
+    _operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
 }
 
 - (void)integrateWithScrollView:(UIScrollView *)scrollView {

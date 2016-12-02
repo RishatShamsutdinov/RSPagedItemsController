@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "RSPagedItemsController"
-  s.version      = "3.0.5"
+  s.version      = "3.0.6"
   s.summary      = "No summary yet."
 
   s.description  = <<-DESC
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
 
   s.author       = { "Rishat Shamsutdinov" => "dichat.dark@gmail.com" }
 
-  s.platform     = :ios, "7.1"
+  s.platform     = :ios, "8.0"
 
   s.source       = { :git => "https://github.com/RishatShamsutdinov/RSPagedItemsController.git", :tag => "v" + s.version.to_s }
 
