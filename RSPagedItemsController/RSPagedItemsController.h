@@ -145,6 +145,8 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 @protocol RSPagedItemsControllerDelegate <NSObject>
 @optional
 
+- (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController willAddItems:(NSArray *)items;
+
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
        didChangeItemsForType:(RSPagedItemsChangeType)changeType userInfo:(NSDictionary *)userInfo;
 

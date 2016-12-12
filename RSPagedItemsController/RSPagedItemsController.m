@@ -383,6 +383,12 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     NSEnumerator *enumerator;
     NSUInteger indexForInsert;
 
+    id<RSPagedItemsControllerDelegate> delegate = self.delegate;
+
+    if ([delegate respondsToSelector:@selector(pagedItemsController:willAddItems:)]) {
+        [delegate pagedItemsController:self willAddItems:items];
+    }
+
     if (items.count && !_collectionAllowsDuplicates) {
         items = [items rs_filteredArrayUsingBlock:^BOOL(id obj) {
             return ![self->_items containsObject:obj];
