@@ -16,6 +16,8 @@
  *
  */
 
+#import <pthread/pthread.h>
+
 #import "RSPagedItemsLoadManager_Private.h"
 #import "RSFoundationUtils.h"
 
@@ -43,6 +45,9 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     BOOL _needsLoadMore;
 
     NSOperationQueue *_operationQueue;
+    NSMutableArray<NSOperation *> *_postponedOperations;
+
+    pthread_mutex_t _mutex;
 }
 
 @end
@@ -69,6 +74,10 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
        allowsActivityIndicator:(BOOL)allowsActivityIndicator
 {
     if (self = [self init]) {
+        assert(pthread_mutex_init(&_mutex, NULL) == 0);
+
+        _postponedOperations = [NSMutableArray new];
+
         [self configureOperationQueue];
 
         _scrollViewEdge = scrollViewEdge;
@@ -158,14 +167,29 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
     _scrollView = scrollView;
 
+    pthread_mutex_lock(&_mutex);
+
+    [_postponedOperations enumerateObjectsUsingBlock:
+     ^(NSOperation * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+         [obj start];
+     }];
+
+    [_postponedOperations removeAllObjects];
+
     _operationQueue.suspended = NO;
+
+    pthread_mutex_unlock(&_mutex);
 }
 
 - (void)disintegrate {
     ASSERT_MAIN_THREAD
 
+    pthread_mutex_lock(&_mutex);
+
     [_operationQueue cancelAllOperations];
     [_operationQueue setSuspended:NO];
+
+    pthread_mutex_unlock(&_mutex);
 
     [self hideActivityIndicatorForScrollViewIfNeeded:_scrollView];
 
@@ -217,7 +241,17 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 }
 
 - (void)queueOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)())block {
-    [_operationQueue addOperation:[self blockOperationForLoader:loader withBlock:block]];
+    pthread_mutex_lock(&_mutex);
+
+    NSOperation *op = [self blockOperationForLoader:loader withBlock:block];
+
+    if ([_operationQueue isSuspended]) {
+        [_postponedOperations addObject:op];
+    } else {
+        [_operationQueue addOperation:op];
+    }
+
+    pthread_mutex_unlock(&_mutex);
 }
 
 #pragma mark - Appearance of activity indicator
@@ -336,7 +370,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 - (void)pagedItemsLoader:(id<RSPagedItemsLoader>)pagedItemsLoader didLoadItems:(NSArray *)items initial:(BOOL)initial {
     typeof(self) __weak weakSelf = self;
 
-    [_operationQueue addOperations:@[[self blockOperationForLoader:pagedItemsLoader withBlock:^{
+    [self queueOperationForLoader:pagedItemsLoader withBlock:^{
         voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
             id delegate = self.delegate;
 
@@ -364,12 +398,12 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
                                    } else {
                                        self->_readyForLoading = YES;
                                    }
-                                   
+
                                    self->_needsLoadMore = NO;
                                });
                            });
         });
-    }]] waitUntilFinished:YES];
+    }];
 }
 
 - (void)pagedItemsLoader:(id<RSPagedItemsLoader>)pagedItemsLoader didFailLoadWithError:(NSError *)error
@@ -377,7 +411,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 {
     typeof(self) __weak weakSelf = self;
 
-    [_operationQueue addOperations:@[[self blockOperationForLoader:pagedItemsLoader withBlock:^{
+    [self queueOperationForLoader:pagedItemsLoader withBlock:^{
         voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
             self->_readyForLoading = YES;
 
@@ -387,7 +421,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
                 [delegate pagedItemsLoadManager:self didFailLoadWithError:error initial:initial];
             }
         });
-    }]] waitUntilFinished:YES];
+    }];
 }
 
 #pragma mark -
@@ -414,6 +448,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
 - (void)dealloc {
     assert(_loader == nil);
+
+    pthread_mutex_destroy(&_mutex);
 }
 
 @end
