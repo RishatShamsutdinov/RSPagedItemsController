@@ -23,6 +23,7 @@
 
 NSString * const RSPagedItemsControllerIndexesKey = @"RSPagedItemsControllerIndexesKey";
 NSString * const RSPagedItemsControllerObjectsKey = @"RSPagedItemsControllerObjectsKey";
+NSString * const RSPagedItemsControllerAreObjectsFromLoaderKey = @"RSPagedItemsControllerAreObjectsFromLoaderKey";
 
 @interface RSPagedItemsController () <RSPagedItemsLoadManagerDelegate> {
     id<RSPagedItemsCollection> _items;
@@ -152,7 +153,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 }
 
 - (void)pRS_PIC_didChageItemsAtIndexes:(NSIndexSet *)indexes withObjects:(NSArray *)objects
-                               forType:(RSPagedItemsChangeType)changeType
+                               forType:(RSPagedItemsChangeType)changeType fromLoader:(BOOL)fromLoader
 {
     if (!indexes.count && changeType != RSPagedItemsChangeReplace) {
         return;
@@ -163,7 +164,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     if ([delegate respondsToSelector:@selector(pagedItemsController:didChangeItemsForType:userInfo:)]) {
         [delegate pagedItemsController:self didChangeItemsForType:changeType
                               userInfo:@{RSPagedItemsControllerIndexesKey: indexes,
-                                         RSPagedItemsControllerObjectsKey: objects}];
+                                         RSPagedItemsControllerObjectsKey: objects,
+                                         RSPagedItemsControllerAreObjectsFromLoaderKey: @(fromLoader)}];
     }
 }
 
@@ -206,7 +208,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     [_items insertObjects:objects atIndexes:indexes];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:changeType];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:changeType fromLoader:NO];
 }
 
 - (void)loadItemsUsingBlock:(RSPagedItemsControllerLoadingBlock)block
@@ -284,7 +286,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     [_items removeObjectsAtIndexes:indexes];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete fromLoader:NO];
 }
 
 - (void)removeObjectsPassingTest:(BOOL (^)(id, NSUInteger))predicate {
@@ -302,7 +304,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         return NO;
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete fromLoader:NO];
 }
 
 - (void)removeAllObjects {
@@ -316,7 +318,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, objects.count)];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete fromLoader:NO];
 }
 
 - (void)updateObjectsUsingBlock:(BOOL (^)(id, NSUInteger, BOOL *))block {
@@ -336,7 +338,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         }
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeUpdate];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeUpdate fromLoader:NO];
 }
 
 - (void)replaceObjectsUsingBlock:(id (^)(id, NSUInteger, BOOL *))block {
@@ -358,7 +360,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         self->_items[idx] = objects[currentObjectsIdx++];
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeReplace];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeReplace fromLoader:NO];
 }
 
 #pragma mark -
@@ -385,7 +387,10 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     id<RSPagedItemsControllerDelegate> delegate = self.delegate;
 
-    if ([delegate respondsToSelector:@selector(pagedItemsController:willAddItems:)]) {
+    if ([delegate respondsToSelector:@selector(pagedItemsController:willAddLoadedItems:)]) {
+        [delegate pagedItemsController:self willAddLoadedItems:items];
+    }
+    else if ([delegate respondsToSelector:@selector(pagedItemsController:willAddItems:)]) {
         [delegate pagedItemsController:self willAddItems:items];
     }
 
@@ -431,7 +436,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     [_items insertObjects:objects atIndex:indexForInsert];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:changeType];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:changeType fromLoader:YES];
 }
 
 @end

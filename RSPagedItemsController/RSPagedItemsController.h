@@ -43,6 +43,7 @@ typedef void(^RSPagedItemsControllerLoadingBlock)(RSPagedItemsControllerHandler 
 
 extern NSString * const RSPagedItemsControllerIndexesKey;
 extern NSString * const RSPagedItemsControllerObjectsKey;
+extern NSString * const RSPagedItemsControllerAreObjectsFromLoaderKey;
 
 /**
  * @warning Call \c disintegrate before dealloc.
@@ -145,7 +146,9 @@ extern NSString * const RSPagedItemsControllerObjectsKey;
 @protocol RSPagedItemsControllerDelegate <NSObject>
 @optional
 
-- (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController willAddItems:(NSArray *)items;
+- (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController willAddItems:(NSArray *)items DEPRECATED_ATTRIBUTE;
+
+- (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController willAddLoadedItems:(NSArray *)items;
 
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
        didChangeItemsForType:(RSPagedItemsChangeType)changeType userInfo:(NSDictionary *)userInfo;
