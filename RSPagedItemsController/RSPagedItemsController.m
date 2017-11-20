@@ -212,7 +212,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 }
 
 - (void)loadItemsUsingBlock:(RSPagedItemsControllerLoadingBlock)block
-                withHandler:(void (^)(NSArray *items))handler completion:(void (^)())completion
+                withHandler:(void (^)(NSArray *items))handler completion:(void (^)(void))completion
 {
     if (!_itemsUUID) {
         return;
@@ -241,7 +241,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     });
 }
 
-- (void)addObjectsUsingBlock:(RSPagedItemsControllerLoadingBlock)block completion:(void (^)())completion {
+- (void)addObjectsUsingBlock:(RSPagedItemsControllerLoadingBlock)block completion:(void (^)(void))completion {
     typeof(self) __weak weakSelf = self;
 
     [self loadItemsUsingBlock:block withHandler:^(NSArray *items) {
@@ -252,7 +252,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 }
 
 - (void)insertObjectsAtItemsBeginningUsingBlock:(RSPagedItemsControllerLoadingBlock)block
-                                     completion:(void (^)())completion
+                                     completion:(void (^)(void))completion
 {
     typeof(self) __weak weakSelf = self;
 

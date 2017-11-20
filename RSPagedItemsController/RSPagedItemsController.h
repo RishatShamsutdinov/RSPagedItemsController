@@ -132,13 +132,13 @@ extern NSString * const RSPagedItemsControllerAreObjectsFromLoaderKey;
 /**
  * @param completion Invoked on main thread.
  */
-- (void)addObjectsUsingBlock:(RSPagedItemsControllerLoadingBlock)block completion:(void (^)())completion;
+- (void)addObjectsUsingBlock:(RSPagedItemsControllerLoadingBlock)block completion:(void (^)(void))completion;
 
 /**
  * @param completion Invoked on main thread.
  */
 - (void)insertObjectsAtItemsBeginningUsingBlock:(RSPagedItemsControllerLoadingBlock)block
-                                     completion:(void (^)())completion;
+                                     completion:(void (^)(void))completion;
 
 @end
 

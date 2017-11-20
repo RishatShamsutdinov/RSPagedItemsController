@@ -222,8 +222,8 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     return contentSize;
 }
 
-- (NSBlockOperation *)blockOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)())block {
-    void __block (^copiedBlock)() = [block copy];
+- (NSBlockOperation *)blockOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)(void))block {
+    void __block (^copiedBlock)(void) = [block copy];
 
     typeof(self) __weak weakSelf = self;
 
@@ -240,7 +240,7 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
     return op;
 }
 
-- (void)queueOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)())block {
+- (void)queueOperationForLoader:(id<RSPagedItemsLoader>)loader withBlock:(void (^)(void))block {
     pthread_mutex_lock(&_mutex);
 
     NSOperation *op = [self blockOperationForLoader:loader withBlock:block];
