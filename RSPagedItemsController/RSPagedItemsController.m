@@ -388,7 +388,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     id<RSPagedItemsControllerDelegate> delegate = self.delegate;
 
     if ([delegate respondsToSelector:@selector(pagedItemsController:willAddLoadedItems:)]) {
-        [delegate pagedItemsController:self willAddLoadedItems:items];
+        items = [delegate pagedItemsController:self willAddLoadedItems:items];
     }
     else if ([delegate respondsToSelector:@selector(pagedItemsController:willAddItems:)]) {
         [delegate pagedItemsController:self willAddItems:items];

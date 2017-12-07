@@ -148,7 +148,7 @@ extern NSString * const RSPagedItemsControllerAreObjectsFromLoaderKey;
 
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController willAddItems:(NSArray *)items DEPRECATED_ATTRIBUTE;
 
-- (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController willAddLoadedItems:(NSArray *)items;
+- (NSArray *)pagedItemsController:(RSPagedItemsController *)pagedItemsController willAddLoadedItems:(NSArray *)items;
 
 - (void)pagedItemsController:(RSPagedItemsController *)pagedItemsController
        didChangeItemsForType:(RSPagedItemsChangeType)changeType userInfo:(NSDictionary *)userInfo;

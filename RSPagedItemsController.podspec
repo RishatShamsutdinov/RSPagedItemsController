@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "RSPagedItemsController"
-  s.version      = "3.1.3"
+  s.version      = "4.0.0"
   s.summary      = "No summary yet."
 
   s.description  = <<-DESC
@@ -21,10 +21,8 @@ Pod::Spec.new do |s|
   s.private_header_files = "RSPagedItemsController/**/*_Private.h"
 
   s.framework  = "UIKit"
-  # s.frameworks = "SomeFramework", "AnotherFramework"
 
   s.requires_arc = true
 
   s.dependency "RSFoundationUtils", "~> 0.1"
-
 end
