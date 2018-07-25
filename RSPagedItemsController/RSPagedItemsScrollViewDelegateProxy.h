@@ -37,6 +37,6 @@
 @protocol RSPagedItemsScrollViewDelegateProxyDelegate <NSObject>
 @optional
 
-- (void)scrollView:(UIScrollView *)scrollView willScrollToEdge:(RSScrollViewEdge)edge;
+- (void)scrollView:(UIScrollView *)scrollView willScrollToEdges:(RSScrollViewEdges)edges;
 
 @end

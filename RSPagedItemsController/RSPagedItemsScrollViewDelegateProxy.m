@@ -22,7 +22,10 @@
 @interface RSPagedItemsScrollViewDelegateProxy () <RSScrollViewDelegate> {
     id<UIScrollViewDelegate> __weak _target;
 
-    CGPoint _prevContentOffset;
+    CGPoint _prevTopContentOffset;
+    CGPoint _prevBottomContentOffset;
+    CGPoint _prevLeftContentOffset;
+    CGPoint _prevRightContentOffset;
 
     NSMapTable<NSString *, NSMethodSignature *> *_methodSignaturesCache;
 }
@@ -109,7 +112,7 @@
     }
 
     if (shouldScrollToTop) {
-        _prevContentOffset = scrollView.contentOffset;
+        _prevTopContentOffset = _prevBottomContentOffset = scrollView.contentOffset;
     }
 
     return shouldScrollToTop;
@@ -146,36 +149,48 @@
 - (void)handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView forced:(BOOL)forced {
     id delegate = self.delegate;
 
-    if (![delegate respondsToSelector:@selector(scrollView:willScrollToEdge:)]) {
+    if (![delegate respondsToSelector:@selector(scrollView:willScrollToEdges:)]) {
         return;
     }
 
     CGSize contentSize = scrollView.contentSize;
     CGFloat scrollViewHeight = scrollView.bounds.size.height;
+    CGFloat scrollViewWidth = scrollView.bounds.size.width;
 
-    NSNumber *edgeNum;
+    RSScrollViewEdges edges = kNilOptions;
 
-    if (contentOffset.y <= scrollViewHeight && (forced || contentOffset.y - _prevContentOffset.y < 0)) {
-        edgeNum = @(RSScrollViewEdgeTop);
+    if (contentOffset.y <= scrollViewHeight && (forced || contentOffset.y - _prevTopContentOffset.y < 0)) {
+        edges |= RSScrollViewEdgesTop;
 
-        _prevContentOffset = CGPointMake(contentOffset.x, -scrollView.contentInset.top);
+        _prevTopContentOffset = CGPointMake(contentOffset.x, -scrollView.contentInset.top);
     }
 
     if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2) &&
-        (forced || contentOffset.y - _prevContentOffset.y > 0))
+        (forced || contentOffset.y - _prevBottomContentOffset.y > 0))
     {
-        edgeNum = @(RSScrollViewEdgeBottom);
+        edges |= RSScrollViewEdgesBottom;
 
-        _prevContentOffset = CGPointMake(contentOffset.x,
-                                         contentSize.height - scrollViewHeight + scrollView.contentInset.bottom);
+        _prevBottomContentOffset = CGPointMake(contentOffset.x,
+                                               contentSize.height - scrollViewHeight + scrollView.contentInset.bottom);
     }
 
-    if (edgeNum) {
-        RSScrollViewEdge edge;
+    if (contentOffset.x <= scrollViewWidth && (forced || contentOffset.x - _prevLeftContentOffset.x < 0)) {
+        edges |= RSScrollViewEdgesLeft;
 
-        [edgeNum getValue:&edge];
-        
-        [delegate scrollView:scrollView willScrollToEdge:edge];
+        _prevLeftContentOffset = CGPointMake(-scrollView.contentInset.left, contentOffset.y);
+    }
+
+    if (contentOffset.x >= (contentSize.width - scrollViewWidth * 2) &&
+        (forced || contentOffset.x - _prevRightContentOffset.x > 0))
+    {
+        edges |= RSScrollViewEdgesRight;
+
+        _prevRightContentOffset = CGPointMake(contentSize.width - scrollViewWidth + scrollView.contentInset.right,
+                                              contentOffset.y);
+    }
+
+    if (edges != kNilOptions) {
+        [delegate scrollView:scrollView willScrollToEdges:edges];
     }
 }
 

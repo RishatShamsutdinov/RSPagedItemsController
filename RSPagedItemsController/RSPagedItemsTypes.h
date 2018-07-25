@@ -21,7 +21,18 @@
 
 typedef NS_ENUM(NSUInteger, RSScrollViewEdge) {
     RSScrollViewEdgeBottom,
-    RSScrollViewEdgeTop
+    RSScrollViewEdgeTop,
+    RSScrollViewEdgeLeft,
+    RSScrollViewEdgeRight
+};
+
+#define RSScrollViewEdgesFromEdge(__edge) ((NSUInteger)1 << (__edge))
+
+typedef NS_OPTIONS(NSUInteger, RSScrollViewEdges) {
+    RSScrollViewEdgesBottom = RSScrollViewEdgesFromEdge(RSScrollViewEdgeBottom),
+    RSScrollViewEdgesTop    = RSScrollViewEdgesFromEdge(RSScrollViewEdgeTop),
+    RSScrollViewEdgesLeft   = RSScrollViewEdgesFromEdge(RSScrollViewEdgeLeft),
+    RSScrollViewEdgesRight  = RSScrollViewEdgesFromEdge(RSScrollViewEdgeRight)
 };
 
 #endif

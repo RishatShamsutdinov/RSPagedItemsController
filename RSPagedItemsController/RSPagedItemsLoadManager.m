@@ -283,7 +283,6 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
             break;
         }
-
         case RSScrollViewEdgeTop: {
             if (tableView.tableHeaderView) {
                 return;
@@ -291,6 +290,11 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
             tableView.tableHeaderView = _activityIndicatorViewContainer;
 
+            break;
+        }
+        case RSScrollViewEdgeLeft:
+        case RSScrollViewEdgeRight: {
+            // do nothing
             break;
         }
     }
@@ -317,22 +321,23 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
 
 #pragma mark - RSPagedItemsScrollViewDelegateProxyDelegate
 
-- (void)scrollView:(UIScrollView *)scrollView willScrollToEdge:(RSScrollViewEdge)edge {
+- (void)scrollView:(UIScrollView *)scrollView willScrollToEdges:(RSScrollViewEdges)edges {
     if (self.enableLoading) {
         typeof(self) __weak weakSelf = self;
 
         [self queueOperationForLoader:_loader withBlock:^{
             voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
-                [self tryToLoadMoreWithScrollViewEdge:edge];
+                [self tryToLoadMoreWithScrollViewEdges:edges];
             });
         }];
     }
 }
 
-- (void)tryToLoadMoreWithScrollViewEdge:(RSScrollViewEdge)edge {
+- (void)tryToLoadMoreWithScrollViewEdges:(RSScrollViewEdges)edges {
     CGSize contentSize = [self contentSizeOfElementsInScrollView];
+    RSScrollViewEdges allowedEdges = RSScrollViewEdgesFromEdge(self.scrollViewEdge);
 
-    if (contentSize.height && edge == self.scrollViewEdge) {
+    if (contentSize.height && (edges & allowedEdges)) {
         if (!_readyForLoading) {
             _needsLoadMore = YES;
             return;
@@ -378,30 +383,42 @@ static NSTimeInterval const kDelayAfterItemsLoad = 0.1;
                 [delegate pagedItemsLoadManager:self didLoadItems:items initial:initial];
             }
 
+            void (^loadMoreIfNeeded)(void) = ^{
+                voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+                    CGSize contentSize = [self contentSizeOfElementsInScrollView];
+                    BOOL contentFillsScrollView = YES;
+
+                    switch (self.scrollViewEdge) {
+                        case RSScrollViewEdgeTop:
+                        case RSScrollViewEdgeBottom: {
+                            contentFillsScrollView = (contentSize.height >= self->_scrollView.bounds.size.height);
+                            break;
+                        }
+                        case RSScrollViewEdgeLeft:
+                        case RSScrollViewEdgeRight: {
+                            contentFillsScrollView = (contentSize.width >= self->_scrollView.bounds.size.width);
+                            break;
+                        }
+                    }
+
+                    if (self.enableLoading && (self->_needsLoadMore || !contentFillsScrollView)) {
+                        [self queueOperationForLoader:pagedItemsLoader withBlock:^{
+                            voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
+                                self->_readyForLoading = YES;
+
+                                [self tryToLoadMoreWithScrollViewEdges:RSScrollViewEdgesFromEdge(self.scrollViewEdge)];
+                            });
+                        }];
+                    } else {
+                        self->_readyForLoading = YES;
+                    }
+
+                    self->_needsLoadMore = NO;
+                });
+            };
+
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kDelayAfterItemsLoad * NSEC_PER_SEC)),
-                           dispatch_get_main_queue(),
-                           ^{
-                               voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
-                                   CGSize contentSize = [self contentSizeOfElementsInScrollView];
-
-                                   if (self.enableLoading &&
-                                       (self->_needsLoadMore ||
-                                        contentSize.height < self->_scrollView.bounds.size.height))
-                                   {
-                                       [self queueOperationForLoader:pagedItemsLoader withBlock:^{
-                                           voidWithStrongSelf(weakSelf, ^(typeof(self) self) {
-                                               self->_readyForLoading = YES;
-
-                                               [self tryToLoadMoreWithScrollViewEdge:self.scrollViewEdge];
-                                           });
-                                       }];
-                                   } else {
-                                       self->_readyForLoading = YES;
-                                   }
-
-                                   self->_needsLoadMore = NO;
-                               });
-                           });
+                           dispatch_get_main_queue(), loadMoreIfNeeded);
         });
     }];
 }
