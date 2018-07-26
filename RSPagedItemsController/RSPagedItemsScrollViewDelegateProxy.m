@@ -99,7 +99,7 @@
         [_target scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
     }
 
-    if (velocity.y) {
+    if (velocity.x || velocity.y) {
         [self handleContentOffset:*targetContentOffset ofScrollView:scrollView];
     }
 }
