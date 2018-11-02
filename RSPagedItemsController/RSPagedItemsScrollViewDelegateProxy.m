@@ -22,9 +22,9 @@
 @interface RSPagedItemsScrollViewDelegateProxy () <RSScrollViewDelegate> {
     id<UIScrollViewDelegate> __weak _target;
 
-    CGPoint _prevTopContentOffset;
+    CGPoint _prevTopInvertedContentOffset;
     CGPoint _prevBottomContentOffset;
-    CGPoint _prevLeftContentOffset;
+    CGPoint _prevLeftInvertedContentOffset;
     CGPoint _prevRightContentOffset;
 
     NSMapTable<NSString *, NSMethodSignature *> *_methodSignaturesCache;
@@ -84,7 +84,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (!scrollView.decelerating) {
-        [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
+        [self pRS_PISVDP_handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
     }
 
     if ([_target respondsToSelector:@selector(scrollViewDidScroll:)]) {
@@ -93,14 +93,14 @@
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint *)targetContentOffset {
-
+              targetContentOffset:(inout CGPoint *)targetContentOffset
+{
     if ([_target respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
         [_target scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
     }
 
     if (velocity.x || velocity.y) {
-        [self handleContentOffset:*targetContentOffset ofScrollView:scrollView];
+        [self pRS_PISVDP_handleContentOffset:*targetContentOffset ofScrollView:scrollView];
     }
 }
 
@@ -112,14 +112,16 @@
     }
 
     if (shouldScrollToTop) {
-        _prevTopContentOffset = _prevBottomContentOffset = scrollView.contentOffset;
+        _prevBottomContentOffset = scrollView.contentOffset;
+        _prevTopInvertedContentOffset = [self pRS_PISVDP_invertedContentOffsetForScrollView: scrollView
+                                                                              contentOffset: scrollView.contentOffset];
     }
 
     return shouldScrollToTop;
 }
 
 - (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView {
-    [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
+    [self pRS_PISVDP_handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
 
     if ([_target respondsToSelector:@selector(scrollViewDidScrollToTop:)]) {
         [_target scrollViewDidScrollToTop:scrollView];
@@ -127,7 +129,7 @@
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
+    [self pRS_PISVDP_handleContentOffset:scrollView.contentOffset ofScrollView:scrollView];
 
     if ([_target respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
         [_target scrollViewDidEndDecelerating:scrollView];
@@ -135,18 +137,27 @@
 }
 
 - (void)rs_scrollViewDidChangeContentSize:(UIScrollView *)scrollView {
-    [self handleContentOffset:scrollView.contentOffset ofScrollView:scrollView forced:YES];
+    [self pRS_PISVDP_handleContentOffset:scrollView.contentOffset ofScrollView:scrollView forced:YES];
 
     if ([_target respondsToSelector:@selector(rs_scrollViewDidChangeContentSize:)]) {
         [(id<RSScrollViewDelegate>)_target rs_scrollViewDidChangeContentSize:scrollView];
     }
 }
 
-- (void)handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView {
-    [self handleContentOffset:contentOffset ofScrollView:scrollView forced:NO];
+- (CGPoint)pRS_PISVDP_invertedContentOffsetForScrollView:(UIScrollView *)scrollView
+                                           contentOffset:(CGPoint)contentOffset
+{
+    CGSize contentSize = scrollView.contentSize;
+
+    return CGPointMake(contentSize.width - contentOffset.x - scrollView.bounds.size.width,
+                       contentSize.height - contentOffset.y - scrollView.bounds.size.height);
 }
 
-- (void)handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView forced:(BOOL)forced {
+- (void)pRS_PISVDP_handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView {
+    [self pRS_PISVDP_handleContentOffset:contentOffset ofScrollView:scrollView forced:NO];
+}
+
+- (void)pRS_PISVDP_handleContentOffset:(CGPoint)contentOffset ofScrollView:(UIScrollView *)scrollView forced:(BOOL)forced {
     id delegate = self.delegate;
 
     if (![delegate respondsToSelector:@selector(scrollView:willScrollToEdges:)]) {
@@ -154,43 +165,52 @@
     }
 
     CGSize contentSize = scrollView.contentSize;
+    UIEdgeInsets contentInsets = scrollView.contentInset;
     CGFloat scrollViewHeight = scrollView.bounds.size.height;
     CGFloat scrollViewWidth = scrollView.bounds.size.width;
 
+    CGPoint invertedContentOffset = [self pRS_PISVDP_invertedContentOffsetForScrollView: scrollView
+                                                                          contentOffset: contentOffset];
+
+    BOOL (^isItCloseToEdge)(CGFloat, CGFloat, CGFloat, CGFloat) = ^BOOL(CGFloat axisOffset, CGFloat prevAxisOffset,
+                                                                        CGFloat contentAxisSize, CGFloat viewAxisSize)
+    {
+        return (axisOffset >= (contentAxisSize - viewAxisSize * 2) &&
+                (forced || (contentAxisSize > 0 && axisOffset > prevAxisOffset)));
+    };
+
     RSScrollViewEdges edges = kNilOptions;
 
-    if (contentOffset.y <= scrollViewHeight &&
-        (forced || (scrollView.contentSize.height > 0 && contentOffset.y < _prevTopContentOffset.y)))
-    {
-        edges |= RSScrollViewEdgesTop;
-
-        _prevTopContentOffset = CGPointMake(contentOffset.x, -scrollView.contentInset.top);
-    }
-
-    if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2) &&
-        (forced || contentOffset.y > _prevBottomContentOffset.y))
-    {
+    if (isItCloseToEdge(contentOffset.y, _prevBottomContentOffset.y, contentSize.height, scrollViewHeight)) {
         edges |= RSScrollViewEdgesBottom;
 
         _prevBottomContentOffset = CGPointMake(contentOffset.x,
-                                               contentSize.height - scrollViewHeight + scrollView.contentInset.bottom);
+                                               contentSize.height - scrollViewHeight + contentInsets.bottom);
     }
 
-    if (contentOffset.x <= scrollViewWidth &&
-        (forced || (scrollView.contentSize.width > 0 && contentOffset.x < _prevLeftContentOffset.x)))
+    if (isItCloseToEdge(contentOffset.x, _prevRightContentOffset.x, contentSize.width, scrollViewWidth)) {
+        edges |= RSScrollViewEdgesRight;
+
+        _prevRightContentOffset = CGPointMake(contentSize.width - scrollViewWidth + contentInsets.right,
+                                              contentOffset.y);
+    }
+
+    if (isItCloseToEdge(invertedContentOffset.y, _prevTopInvertedContentOffset.y,
+                        contentSize.height, scrollViewHeight))
+    {
+        edges |= RSScrollViewEdgesTop;
+
+        _prevTopInvertedContentOffset = CGPointMake(invertedContentOffset.x,
+                                                    contentSize.height - scrollViewHeight + contentInsets.top);
+    }
+
+    if (isItCloseToEdge(invertedContentOffset.x, _prevLeftInvertedContentOffset.x,
+                        contentSize.width, scrollViewWidth))
     {
         edges |= RSScrollViewEdgesLeft;
 
-        _prevLeftContentOffset = CGPointMake(-scrollView.contentInset.left, contentOffset.y);
-    }
-
-    if (contentOffset.x >= (contentSize.width - scrollViewWidth * 2) &&
-        (forced || contentOffset.x > _prevRightContentOffset.x))
-    {
-        edges |= RSScrollViewEdgesRight;
-
-        _prevRightContentOffset = CGPointMake(contentSize.width - scrollViewWidth + scrollView.contentInset.right,
-                                              contentOffset.y);
+        _prevLeftInvertedContentOffset = CGPointMake(contentSize.width - scrollViewWidth + contentInsets.left,
+                                                     invertedContentOffset.y);
     }
 
     if (edges != kNilOptions) {
