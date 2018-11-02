@@ -159,14 +159,16 @@
 
     RSScrollViewEdges edges = kNilOptions;
 
-    if (contentOffset.y <= scrollViewHeight && (forced || contentOffset.y - _prevTopContentOffset.y < 0)) {
+    if (contentOffset.y <= scrollViewHeight &&
+        (forced || (scrollView.contentSize.height > 0 && contentOffset.y < _prevTopContentOffset.y)))
+    {
         edges |= RSScrollViewEdgesTop;
 
         _prevTopContentOffset = CGPointMake(contentOffset.x, -scrollView.contentInset.top);
     }
 
     if (contentOffset.y >= (contentSize.height - scrollViewHeight * 2) &&
-        (forced || contentOffset.y - _prevBottomContentOffset.y > 0))
+        (forced || contentOffset.y > _prevBottomContentOffset.y))
     {
         edges |= RSScrollViewEdgesBottom;
 
@@ -174,14 +176,16 @@
                                                contentSize.height - scrollViewHeight + scrollView.contentInset.bottom);
     }
 
-    if (contentOffset.x <= scrollViewWidth && (forced || contentOffset.x - _prevLeftContentOffset.x < 0)) {
+    if (contentOffset.x <= scrollViewWidth &&
+        (forced || (scrollView.contentSize.width > 0 && contentOffset.x < _prevLeftContentOffset.x)))
+    {
         edges |= RSScrollViewEdgesLeft;
 
         _prevLeftContentOffset = CGPointMake(-scrollView.contentInset.left, contentOffset.y);
     }
 
     if (contentOffset.x >= (contentSize.width - scrollViewWidth * 2) &&
-        (forced || contentOffset.x - _prevRightContentOffset.x > 0))
+        (forced || contentOffset.x > _prevRightContentOffset.x))
     {
         edges |= RSScrollViewEdgesRight;
 
