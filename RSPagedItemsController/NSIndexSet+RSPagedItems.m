@@ -28,7 +28,7 @@
         [result addObject:block(idx)];
     }];
 
-    return result;
+    return [result copy];
 }
 
 - (NSArray *)rs_indexPathsForRowsInSection:(NSInteger)section {

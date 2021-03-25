@@ -208,7 +208,7 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     [_items insertObjects:objects atIndexes:indexes];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:changeType fromLoader:NO];
+    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] withObjects:objects forType:changeType fromLoader:NO];
 }
 
 - (void)loadItemsUsingBlock:(RSPagedItemsControllerLoadingBlock)block
@@ -304,7 +304,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         return NO;
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete fromLoader:NO];
+    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] withObjects:[objects copy]
+                                 forType:RSPagedItemsChangeDelete fromLoader:NO];
 }
 
 - (void)removeAllObjects {
@@ -318,7 +319,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
 
     NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, objects.count)];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeDelete fromLoader:NO];
+    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:[objects copy]
+                                 forType:RSPagedItemsChangeDelete fromLoader:NO];
 }
 
 - (void)updateObjectsUsingBlock:(BOOL (^)(id, NSUInteger, BOOL *))block {
@@ -338,7 +340,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         }
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeUpdate fromLoader:NO];
+    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] withObjects:[objects copy]
+                                 forType:RSPagedItemsChangeUpdate fromLoader:NO];
 }
 
 - (void)replaceObjectsUsingBlock:(id (^)(id, NSUInteger, BOOL *))block {
@@ -360,7 +363,8 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
         self->_items[idx] = objects[currentObjectsIdx++];
     }];
 
-    [self pRS_PIC_didChageItemsAtIndexes:indexes withObjects:objects forType:RSPagedItemsChangeReplace fromLoader:NO];
+    [self pRS_PIC_didChageItemsAtIndexes:[indexes copy] withObjects:[objects copy]
+                                 forType:RSPagedItemsChangeReplace fromLoader:NO];
 }
 
 #pragma mark -
