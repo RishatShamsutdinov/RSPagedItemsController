@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "RSPagedItemsController"
-  s.version      = "4.1.4"
+  s.version      = "5.0.0"
   s.summary      = "No summary yet."
 
   s.description  = <<-DESC
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
 
   s.author       = { "Rishat Shamsutdinov" => "dichat.dark@gmail.com" }
 
-  s.platform     = :ios, "8.0"
+  s.platform     = :ios, "9.0"
 
   s.source       = { :git => "https://github.com/RishatShamsutdinov/RSPagedItemsController.git", :tag => "v" + s.version.to_s }
 
@@ -24,5 +24,5 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  s.dependency "RSFoundationUtils", "~> 0.1"
+  s.dependency "RSFoundationUtils", "~> 1.0"
 end

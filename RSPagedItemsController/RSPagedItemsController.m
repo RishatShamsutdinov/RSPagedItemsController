@@ -394,9 +394,6 @@ static NSEnumerationOptions pRS_PIC_NSEnumerationOptions(RSPagedItemsEnumeration
     if ([delegate respondsToSelector:@selector(pagedItemsController:willAddLoadedItems:)]) {
         items = [delegate pagedItemsController:self willAddLoadedItems:items];
     }
-    else if ([delegate respondsToSelector:@selector(pagedItemsController:willAddItems:)]) {
-        [delegate pagedItemsController:self willAddItems:items];
-    }
 
     if (items.count && !_collectionAllowsDuplicates) {
         items = [items rs_filteredArrayUsingBlock:^BOOL(id obj) {

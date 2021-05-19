@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6DBB347B32860692279FDA1C /* libPods-RSPagedItemsController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DC13C25D74F603E6CFD7AB1A /* libPods-RSPagedItemsController.a */; };
+		0EE02E8B1E0D172171C2E7F4 /* libPods-RSPagedItemsController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A332EBA577431C35CC68D4D /* libPods-RSPagedItemsController.a */; };
+		C8788B4C2AFB44C9FBC0396E /* libPods-RSPagedItemsControllerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7BAB883C9109877614D22E7 /* libPods-RSPagedItemsControllerTests.a */; };
 		FD26D4091B70A04100843575 /* RSPagedItemsController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD26D4081B70A04100843575 /* RSPagedItemsController.h */; };
 		FD26D40B1B70A04100843575 /* RSPagedItemsController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD26D40A1B70A04100843575 /* RSPagedItemsController.m */; };
 		FD26D4111B70A04100843575 /* libRSPagedItemsController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD26D4051B70A04100843575 /* libRSPagedItemsController.a */; };
@@ -43,9 +44,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2C9130032F4F46BB53F2110B /* Pods-RSPagedItemsController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsController.release.xcconfig"; path = "Pods/Target Support Files/Pods-RSPagedItemsController/Pods-RSPagedItemsController.release.xcconfig"; sourceTree = "<group>"; };
-		80AE962BE07133FD49009B12 /* Pods-RSPagedItemsController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsController.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RSPagedItemsController/Pods-RSPagedItemsController.debug.xcconfig"; sourceTree = "<group>"; };
-		DC13C25D74F603E6CFD7AB1A /* libPods-RSPagedItemsController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RSPagedItemsController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		25C08DEB8D8E166069780458 /* Pods-RSPagedItemsController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsController.debug.xcconfig"; path = "Target Support Files/Pods-RSPagedItemsController/Pods-RSPagedItemsController.debug.xcconfig"; sourceTree = "<group>"; };
+		5A332EBA577431C35CC68D4D /* libPods-RSPagedItemsController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RSPagedItemsController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		89399C660853DEE9187CD1B1 /* Pods-RSPagedItemsController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsController.release.xcconfig"; path = "Target Support Files/Pods-RSPagedItemsController/Pods-RSPagedItemsController.release.xcconfig"; sourceTree = "<group>"; };
+		D776199648CD50BC904BCDBD /* Pods-RSPagedItemsControllerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsControllerTests.debug.xcconfig"; path = "Target Support Files/Pods-RSPagedItemsControllerTests/Pods-RSPagedItemsControllerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E7BAB883C9109877614D22E7 /* libPods-RSPagedItemsControllerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RSPagedItemsControllerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA45A4A37B5AFC0F7E9E979D /* Pods-RSPagedItemsControllerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RSPagedItemsControllerTests.release.xcconfig"; path = "Target Support Files/Pods-RSPagedItemsControllerTests/Pods-RSPagedItemsControllerTests.release.xcconfig"; sourceTree = "<group>"; };
 		FD016F351C9BEBA900480A48 /* RSScrollViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSScrollViewDelegate.h; sourceTree = "<group>"; };
 		FD1EFC2A1DA63F2200D581DD /* RSPagedItemsLoadManager_Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSPagedItemsLoadManager_Private.h; sourceTree = "<group>"; };
 		FD26D4051B70A04100843575 /* libRSPagedItemsController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRSPagedItemsController.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,7 +79,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FD26D4251B70A26E00843575 /* UIKit.framework in Frameworks */,
-				6DBB347B32860692279FDA1C /* libPods-RSPagedItemsController.a in Frameworks */,
+				0EE02E8B1E0D172171C2E7F4 /* libPods-RSPagedItemsController.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,19 +88,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				FD26D4111B70A04100843575 /* libRSPagedItemsController.a in Frameworks */,
+				C8788B4C2AFB44C9FBC0396E /* libPods-RSPagedItemsControllerTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A7CE7AAE116765310090BF76 /* Pods */ = {
+		82C07255EE5C3088E24BF515 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				80AE962BE07133FD49009B12 /* Pods-RSPagedItemsController.debug.xcconfig */,
-				2C9130032F4F46BB53F2110B /* Pods-RSPagedItemsController.release.xcconfig */,
+				25C08DEB8D8E166069780458 /* Pods-RSPagedItemsController.debug.xcconfig */,
+				89399C660853DEE9187CD1B1 /* Pods-RSPagedItemsController.release.xcconfig */,
+				D776199648CD50BC904BCDBD /* Pods-RSPagedItemsControllerTests.debug.xcconfig */,
+				FA45A4A37B5AFC0F7E9E979D /* Pods-RSPagedItemsControllerTests.release.xcconfig */,
 			);
-			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		FD26D3FC1B70A04100843575 = {
@@ -106,7 +113,7 @@
 				FD26D4071B70A04100843575 /* RSPagedItemsController */,
 				FD26D4141B70A04100843575 /* RSPagedItemsControllerTests */,
 				FD26D4061B70A04100843575 /* Products */,
-				A7CE7AAE116765310090BF76 /* Pods */,
+				82C07255EE5C3088E24BF515 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -163,7 +170,8 @@
 			isa = PBXGroup;
 			children = (
 				FD26D4241B70A26E00843575 /* UIKit.framework */,
-				DC13C25D74F603E6CFD7AB1A /* libPods-RSPagedItemsController.a */,
+				5A332EBA577431C35CC68D4D /* libPods-RSPagedItemsController.a */,
+				E7BAB883C9109877614D22E7 /* libPods-RSPagedItemsControllerTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -175,11 +183,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FD26D4191B70A04100843575 /* Build configuration list for PBXNativeTarget "RSPagedItemsController" */;
 			buildPhases = (
-				A2A128A4534B467247D03677 /* Check Pods Manifest.lock */,
+				EEE8397C76210113160A0AB8 /* [CP] Check Pods Manifest.lock */,
 				FD26D4011B70A04100843575 /* Sources */,
 				FD26D4021B70A04100843575 /* Frameworks */,
 				FD26D4031B70A04100843575 /* CopyFiles */,
-				BFE7F35C65BD22745A6EE683 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -194,6 +201,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FD26D41C1B70A04100843575 /* Build configuration list for PBXNativeTarget "RSPagedItemsControllerTests" */;
 			buildPhases = (
+				45D1B0E93A7615EA3ABF6971 /* [CP] Check Pods Manifest.lock */,
 				FD26D40C1B70A04100843575 /* Sources */,
 				FD26D40D1B70A04100843575 /* Frameworks */,
 				FD26D40E1B70A04100843575 /* Resources */,
@@ -230,6 +238,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = FD26D3FC1B70A04100843575;
@@ -254,34 +263,48 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		A2A128A4534B467247D03677 /* Check Pods Manifest.lock */ = {
+		45D1B0E93A7615EA3ABF6971 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
+			inputFileListPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RSPagedItemsControllerTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BFE7F35C65BD22745A6EE683 /* Copy Pods Resources */ = {
+		EEE8397C76210113160A0AB8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
+			inputFileListPaths = (
 			);
-			name = "Copy Pods Resources";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RSPagedItemsController-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RSPagedItemsController/Pods-RSPagedItemsController-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -363,7 +386,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -408,7 +431,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -417,7 +440,7 @@
 		};
 		FD26D41A1B70A04100843575 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 80AE962BE07133FD49009B12 /* Pods-RSPagedItemsController.debug.xcconfig */;
+			baseConfigurationReference = 25C08DEB8D8E166069780458 /* Pods-RSPagedItemsController.debug.xcconfig */;
 			buildSettings = {
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -430,7 +453,7 @@
 		};
 		FD26D41B1B70A04100843575 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2C9130032F4F46BB53F2110B /* Pods-RSPagedItemsController.release.xcconfig */;
+			baseConfigurationReference = 89399C660853DEE9187CD1B1 /* Pods-RSPagedItemsController.release.xcconfig */;
 			buildSettings = {
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -443,6 +466,7 @@
 		};
 		FD26D41D1B70A04100843575 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D776199648CD50BC904BCDBD /* Pods-RSPagedItemsControllerTests.debug.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -462,6 +486,7 @@
 		};
 		FD26D41E1B70A04100843575 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FA45A4A37B5AFC0F7E9E979D /* Pods-RSPagedItemsControllerTests.release.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
